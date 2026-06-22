@@ -1,0 +1,2552 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Conteúdo Programático — Lab de Produção de Mídia do Fernandes Menezes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --purple:    #EAB308; /* Brand Yellow (Parque Maravilha) */
+      --purple-l:  #FEF08A; /* Light Yellow */
+      --purple-d:  #854D0E; /* Dark Yellow */
+      --pink:      #F97316; /* Brand Orange (Umimbae) */
+      --pink-l:    #FFEDD5; /* Light Orange */
+      --cyan:      #06B6D4;
+      --cyan-l:    #67E8F9;
+      --amber:     #F59E0B;
+      --amber-l:   #FDE68A;
+      --green:     #10B981;
+      --green-l:   #6EE7B7;
+      --red:       #F87171;
+      --bg:        #0A0A14;
+      --bg2:       #10101E;
+      --bg3:       #16162A;
+      --card:      rgba(255,255,255,0.04);
+      --border:    rgba(255,255,255,0.08);
+      --text:      #F1F0FF;
+      --muted:     #9CA3AF;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.4;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      backdrop-filter: blur(20px) saturate(180%);
+      background: rgba(10,10,20,0.85);
+      border-bottom: 1px solid var(--border);
+      padding: .85rem 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800; font-size: 1.2rem;
+      background: linear-gradient(135deg, var(--purple-l), var(--pink));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 1.2rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none; font-size: .82rem;
+      font-weight: 500; transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-back {
+      font-size: .82rem; font-weight: 600; color: var(--purple-l);
+      text-decoration: none; display: flex; align-items: center; gap: .3rem;
+    }
+    .nav-back:hover { color: var(--text); }
+
+    /* ─── GENERAL ─── */
+    section { position: relative; z-index: 1; width: 100%; padding: 5rem 2rem; scroll-margin-top: 90px; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .divider {
+      height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent);
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, var(--purple-l) 0%, var(--pink) 50%, var(--amber) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ─── HERO ─── */
+    #hero-cur {
+      padding: 6.5rem 2rem 2.5rem;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .hero-orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(130px); pointer-events: none;
+    }
+    .orb-a { width: 420px; height: 420px; background: radial-gradient(circle,rgba(234,179,8,.2) 0%,transparent 70%); top: -80px; left: -120px; }
+    .orb-b { width: 350px; height: 350px; background: radial-gradient(circle,rgba(249,115,22,.15) 0%,transparent 70%); bottom: -60px; right: -80px; }
+
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-size: .75rem; font-weight: 700; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--purple);
+      border: 1px solid rgba(234,179,8,.35); padding: .35rem .9rem;
+      border-radius: 100px; background: rgba(234,179,8,.08);
+      margin-bottom: 1.25rem;
+    }
+    .hero-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(2.2rem, 5.5vw, 4rem);
+      font-weight: 900; line-height: 1.1;
+      letter-spacing: -0.03em; margin-bottom: 1rem;
+    }
+    .hero-sub {
+      color: var(--muted); font-size: clamp(.95rem,1.8vw,1.15rem);
+      max-width: 680px; margin: 0 auto 2rem; line-height: 1.7;
+    }
+    .hero-meta {
+      display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;
+    }
+    .hm {
+      display: flex; align-items: center; gap: .4rem;
+      font-size: .85rem; color: var(--muted);
+      background: var(--card); border: 1px solid var(--border);
+      padding: .45rem 1rem; border-radius: 100px;
+    }
+    .hm strong { color: var(--text); }
+
+    /* ─── METHODOLOGY CALLOUT ─── */
+    .method-box {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 2rem;
+      margin-top: 1rem;
+    }
+    .method-box h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .method-steps {
+      display: flex; gap: .75rem; flex-wrap: wrap;
+    }
+    .ms {
+      flex: 1; min-width: 140px;
+      text-align: center; padding: 1rem .75rem;
+      background: rgba(255,255,255,.03); border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    .ms-num {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem; font-weight: 900; display: block;
+    }
+    .ms-name { font-size: .8rem; font-weight: 700; margin-top: .15rem; }
+    .ms-desc { font-size: .72rem; color: var(--muted); margin-top: .2rem; }
+
+    /* ─── MONTH TAGS — 4 Pilares ─── */
+    .month-tags { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .5rem; }
+    .month-tag {
+      font-size: .68rem; font-weight: 700; letter-spacing: .06em;
+      text-transform: uppercase; padding: .25rem .65rem;
+      border-radius: 100px;
+    }
+    /* Pilar 1 – Física & Tecnologia */
+    .tag-fisica    { background: rgba(6,182,212,.14);  color: #22d3ee; }
+    /* Pilar 2 – História & Arte */
+    .tag-historia  { background: rgba(245,158,11,.14); color: #fbbf24; }
+    /* Pilar 3 – Criação & Composição */
+    .tag-criacao   { background: rgba(167,139,250,.14); color: #c4b5fd; }
+    /* Pilar 4 – Mercado & Empreendedorismo */
+    .tag-mercado   { background: rgba(16,185,129,.14); color: #34d399; }
+    /* Split badge inside card */
+    .week-split {
+      display: flex; gap: .35rem; margin-bottom: .6rem;
+    }
+    .week-split span {
+      font-size: .62rem; font-weight: 600; letter-spacing: .05em;
+      padding: .18rem .5rem; border-radius: 100px;
+    }
+    .split-teoria  { background: rgba(96,165,250,.1);  color: #93c5fd; border: 1px solid rgba(96,165,250,.2); }
+    .split-pratica { background: rgba(52,211,153,.1);  color: #6ee7b7; border: 1px solid rgba(52,211,153,.2); }
+
+    /* ─── CALENDAR INTERACTIVE ─── */
+    .calendar-container {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 2rem;
+      margin-top: 1.5rem;
+      align-items: start;
+    }
+
+    .calendar-main {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* Month Navigation Tabs */
+    .month-tabs {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+    .month-tabs::-webkit-scrollbar {
+      height: 4px;
+    }
+    .month-tabs::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 10px;
+    }
+
+    .month-tab-btn {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 0.85rem 1rem;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(.4,0,.2,1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 100px;
+      flex: 1;
+      text-align: center;
+    }
+    .month-tab-btn:hover {
+      background: rgba(255,255,255,0.05);
+      border-color: rgba(234,179,8,0.3);
+      color: var(--text);
+    }
+    .month-tab-btn.active {
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 4px 15px rgba(234,179,8,0.2);
+    }
+    .month-tab-btn .tab-num {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 0.2rem;
+    }
+    .month-tab-btn .tab-name {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+
+    /* Filter Axis Bar */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 0.85rem 1.25rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .filter-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .filter-options {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 0.35rem 0.8rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-btn:hover {
+      color: var(--text);
+      border-color: rgba(255,255,255,0.15);
+    }
+    .filter-btn.active {
+      background: var(--purple);
+      color: var(--bg);
+      font-weight: 700;
+      border-color: var(--purple);
+    }
+
+    /* Month Panes & Weeks Grid */
+    .month-pane {
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+    .month-pane.active {
+      display: block;
+    }
+    .month-pane-header {
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .month-pane-header h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 800;
+      margin-bottom: 0.25rem;
+    }
+    .month-pane-header p {
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .weeks-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .week-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(.4,0,.2,1);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 160px;
+    }
+    .week-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(234,179,8,0.4);
+      background: rgba(255,255,255,0.06);
+    }
+    .week-card.active {
+      border-color: var(--purple);
+      background: rgba(234,179,8,0.04);
+      box-shadow: 0 0 20px rgba(234,179,8,0.08);
+    }
+    .week-card.dimmed {
+      opacity: 0.25;
+      transform: scale(0.98);
+    }
+    .week-card-top {
+      margin-bottom: 1rem;
+    }
+    .week-card-badge {
+      display: inline-block;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.6rem;
+      border-radius: 100px;
+      background: rgba(255,255,255,0.05);
+      color: var(--muted);
+      margin-bottom: 0.6rem;
+    }
+    .week-card.active .week-card-badge {
+      background: rgba(234,179,8,0.12);
+      color: var(--purple);
+    }
+    .week-card h4 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      line-height: 1.35;
+      margin-bottom: 0.4rem;
+    }
+    .week-card .week-summary {
+      color: var(--muted);
+      font-size: 0.8rem;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .week-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255,255,255,0.04);
+      padding-top: 0.75rem;
+      margin-top: auto;
+    }
+    .week-card-duration {
+      font-size: 0.72rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    /* Detail Panel (Right Column) */
+    .calendar-detail-panel {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 1.75rem;
+      position: sticky;
+      top: 90px;
+      max-height: calc(100vh - 120px);
+      overflow-y: auto;
+      backdrop-filter: blur(10px);
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+    .calendar-detail-panel::-webkit-scrollbar {
+      width: 4px;
+    }
+    .calendar-detail-panel::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 10px;
+    }
+
+    .detail-card {
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+    .detail-card.active {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .detail-header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+    .detail-week-num {
+      display: inline-block;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.75rem;
+      border-radius: 100px;
+      background: rgba(234,179,8,0.12);
+      color: var(--purple);
+      margin-bottom: 0.75rem;
+    }
+    .detail-header h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+    .detail-desc {
+      color: var(--text);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+    .detail-section-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--purple-l);
+      margin-bottom: 0.6rem;
+      border-left: 2px solid var(--purple);
+      padding-left: 0.5rem;
+    }
+    .detail-checklist {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .detail-checklist li {
+      font-size: 0.85rem;
+      color: var(--muted);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      line-height: 1.4;
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.2s;
+    }
+    .detail-checklist li:hover {
+      color: var(--text);
+    }
+    .detail-checklist input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.4);
+      accent-color: var(--purple);
+      margin-top: 0.1rem;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .detail-checklist li.checked {
+      color: rgba(255,255,255,0.25);
+      text-decoration: line-through;
+    }
+    .detail-checklist li.checked input[type="checkbox"] {
+      opacity: 0.5;
+    }
+
+    .detail-ref-tags {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .detail-ref-pill {
+      font-size: 0.7rem;
+      font-weight: 600;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 0.25rem 0.65rem;
+      border-radius: 100px;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .detail-ref-pill:hover {
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      border-color: var(--muted);
+      transform: translateY(-1px);
+    }
+
+    .detail-deliverable {
+      background: linear-gradient(135deg, rgba(234,179,8,0.1), rgba(249,115,22,0.04));
+      border: 1px solid rgba(234,179,8,0.2);
+      border-radius: 16px;
+      padding: 1.1rem 1.25rem;
+      display: flex;
+      gap: 0.75rem;
+    }
+    .detail-deliv-icon {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+    .detail-deliv-text h4 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--purple);
+      margin-bottom: 0.15rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .detail-deliv-text p {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    /* ─── ACCORDION FOR EMENTA FORMAL ─── */
+    .ementa-accordion {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+    .accordion-trigger {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 1.5rem 2rem;
+      color: var(--text);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.3s;
+    }
+    .accordion-trigger:hover {
+      background: rgba(255,255,255,0.02);
+    }
+    .accordion-trigger h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(1.4rem, 3.5vw, 1.8rem);
+      font-weight: 800;
+      margin: 0;
+    }
+    .accordion-trigger-icon {
+      font-size: 1.2rem;
+      color: var(--purple);
+      transition: transform 0.3s;
+    }
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(.4,0,.2,1);
+    }
+    .accordion-content.open {
+      max-height: 1500px;
+      border-top: 1px solid var(--border);
+    }
+    .accordion-inner {
+      padding: 2rem;
+    }
+
+    /* Mobile drawer for class details */
+    .detail-drawer-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      backdrop-filter: blur(4px);
+    }
+    .detail-drawer-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .drawer-handle {
+      width: 40px; height: 5px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 10px;
+      margin: -1rem auto 1.5rem;
+    }
+
+    /* Ementa Grid adaptation */
+    .ementa-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    /* EMENTA CARD, FOOTER, ANIMATIONS */
+    .ementa-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.5rem;
+    }
+    .ementa-card h4 {
+      font-weight: 700; font-size: .95rem; margin-bottom: .5rem;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .ementa-list { list-style: none; display: flex; flex-direction: column; gap: .3rem; }
+    .ementa-list li {
+      font-size: .83rem; color: var(--muted); line-height: 1.4;
+      display: flex; align-items: flex-start; gap: .4rem;
+    }
+    .ementa-list li::before {
+      content: '✓'; font-size: .7rem; font-weight: 800;
+      color: var(--green); flex-shrink: 0; margin-top: .15rem;
+    }
+    .legal-box {
+      margin-top: 2rem; padding: 1.25rem 1.5rem;
+      background: rgba(245,158,11,.06); border: 1px solid rgba(245,158,11,.2);
+      border-radius: 14px;
+    }
+    .legal-box h4 { font-weight: 700; font-size: .9rem; margin-bottom: .3rem; color: var(--amber); }
+    .legal-box p { font-size: .85rem; color: var(--muted); line-height: 1.55; }
+
+    footer {
+      background: var(--bg); border-top: 1px solid var(--border);
+      padding: 2rem; text-align: center;
+      position: relative; z-index: 1;
+    }
+    footer p { color: var(--muted); font-size: .85rem; }
+    footer strong { color: var(--purple-l); }
+
+    .fade-in {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 1024px) {
+      .calendar-container {
+        grid-template-columns: 1fr;
+      }
+      .calendar-detail-panel {
+        position: fixed;
+        bottom: 0; left: 0; right: 0;
+        background: var(--bg2);
+        border: none;
+        border-top: 1px solid var(--border);
+        border-top-left-radius: 28px;
+        border-top-right-radius: 28px;
+        z-index: 1000;
+        max-height: 85vh;
+        overflow-y: auto;
+        padding: 2rem 1.5rem 2.5rem;
+        transform: translateY(100%);
+        visibility: hidden;
+        transition: transform 0.35s cubic-bezier(.4,0,.2,1), visibility 0.35s;
+        box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
+        top: auto;
+        backdrop-filter: none;
+      }
+      .calendar-detail-panel.open {
+        transform: translateY(0);
+        visibility: visible;
+      }
+      .weeks-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    @media (max-width: 768px) {
+      nav .nav-links { display: none; }
+      .weeks-grid { grid-template-columns: 1fr; }
+      .ementa-grid  { grid-template-columns: 1fr; }
+      .method-steps { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">🎵 Lab de Produção</a>
+  <ul class="nav-links">
+    <li><a href="#calendario" class="month-nav-link" data-month="1">Mês 1</a></li>
+    <li><a href="#calendario" class="month-nav-link" data-month="2">Mês 2</a></li>
+    <li><a href="#calendario" class="month-nav-link" data-month="3">Mês 3</a></li>
+    <li><a href="#calendario" class="month-nav-link" data-month="4">Mês 4</a></li>
+    <li><a href="#calendario" class="month-nav-link" data-month="5">Mês 5</a></li>
+    <li><a href="#calendario" class="month-nav-link" data-month="6">Mês 6</a></li>
+    <li><a href="#ementa">Ementa</a></li>
+  </ul>
+  <a href="index.html" class="nav-back">← Voltar ao Pitch</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero-cur">
+  <div class="hero-orb orb-a"></div>
+  <div class="hero-orb orb-b"></div>
+  <div class="container" style="position:relative; z-index:1;">
+    <div class="hero-eyebrow">📋 Documento Pedagógico</div>
+    <h1 class="hero-title">Lab de Produção de <span class="gradient-text">Mídia</span></h1>
+    <p class="hero-sub">
+      Detalhamento completo das 24 aulas do Lab de Produção de Mídia do Fernandes Menezes.
+      Estrutura baseada no currículo acadêmico de <strong>Produção Fonográfica e Audiovisual</strong>
+      e na metodologia proprietária <strong>Do Zero Ao Hit</strong>.
+    </p>
+    <div class="hero-meta">
+      <div class="hm">📅 <strong>6 meses</strong></div>
+      <div class="hm">📚 <strong>24 aulas</strong></div>
+      <div class="hm">⏱️ <strong>~48 horas</strong></div>
+      <div class="hm">🎓 <strong>Certificado incluso</strong></div>
+      <div class="hm">🎬 <strong>1 música + 1 clipe no YouTube</strong></div>
+    </div>
+  </div>
+</section>
+
+<!-- CALENDÁRIO INTERATIVO -->
+<section id="calendario" style="background:var(--bg2); padding: 1.5rem 2rem 2.5rem;">
+  <div class="container">
+    <div style="text-align: center; margin-bottom: 2.5rem;">
+      <h2 style="font-family:'Outfit',sans-serif; font-size:clamp(1.8rem,4vw,2.5rem); font-weight:800; margin-bottom:.5rem;">
+        Calendário <span class="gradient-text">Interativo do Curso</span>
+      </h2>
+      <p style="color:var(--muted); font-size:.95rem; max-width:640px; margin: 0 auto;">
+        Explore as 24 semanas do Lab de Produção de Mídia. Selecione o mês e clique em uma aula para ver o conteúdo detalhado, referências e entregáveis.
+      </p>
+    </div>
+
+    <!-- Overlay para drawer mobile -->
+    <div class="detail-drawer-overlay" id="drawer-overlay"></div>
+
+    <div class="calendar-container">
+      <!-- Coluna Principal (Esquerda): Navegador -->
+      <div class="calendar-main">
+        
+        <!-- Filtros de Eixo -->
+        <div class="filter-bar">
+          <span class="filter-label">Filtrar por Eixo:</span>
+          <div class="filter-options">
+            <button class="filter-btn active" data-filter="all">Todos</button>
+            <button class="filter-btn" data-filter="fisica">🔬 Física</button>
+            <button class="filter-btn" data-filter="historia">📽️ História</button>
+            <button class="filter-btn" data-filter="teoria">🎹 Teoria</button>
+            <button class="filter-btn" data-filter="daw">💻 DAW</button>
+            <button class="filter-btn" data-filter="producao">🎬 Produção</button>
+            <button class="filter-btn" data-filter="negocios">💰 Negócios</button>
+          </div>
+        </div>
+
+        <!-- Abas de Meses -->
+        <div class="month-tabs">
+          <button class="month-tab-btn active" data-month="1">
+            <span class="tab-num">Mês 01</span>
+            <span class="tab-name">Fundamentos</span>
+          </button>
+          <button class="month-tab-btn" data-month="2">
+            <span class="tab-num">Mês 02</span>
+            <span class="tab-name">Composição</span>
+          </button>
+          <button class="month-tab-btn" data-month="3">
+            <span class="tab-num">Mês 03</span>
+            <span class="tab-name">Pré-Prod</span>
+          </button>
+          <button class="month-tab-btn" data-month="4">
+            <span class="tab-num">Mês 04</span>
+            <span class="tab-name">Produção</span>
+          </button>
+          <button class="month-tab-btn" data-month="5">
+            <span class="tab-num">Mês 05</span>
+            <span class="tab-name">Pós-Prod</span>
+          </button>
+          <button class="month-tab-btn" data-month="6">
+            <span class="tab-num">Mês 06</span>
+            <span class="tab-name">Lançamento</span>
+          </button>
+        </div>
+
+        <!-- Conteúdo dos Meses -->
+        <div class="month-panes">
+          
+          <!-- Mês 1 -->
+          <div class="month-pane active" id="month-pane-1">
+            <div class="month-pane-header">
+              <h3>Mês 1: Fundamentos — Som, Imagem e Criatividade</h3>
+              <p>Eixo: Percepção e História. Imersão no universo sonoro e visual.</p>
+            </div>
+            <div class="weeks-grid">
+              <div class="week-card active" data-week="1" data-tags="fisica">
+                <div class="week-card-top">
+                  <span class="week-card-badge">Aula 01 • Semana 1</span>
+                  <h4>A física do som e da imagem</h4>
+                  <p class="week-summary">Ondas, frequência, amplitude e espectro de luz — a base de tudo.</p>
+                  <div class="week-split"><span class="split-teoria">📖 Teoria</span><span class="split-pratica">🎛 Prática</span></div>
+                </div>
+                <div class="week-card-footer">
+                  <span class="month-tag tag-fisica">Física & Tecnologia</span>
+                  <span class="week-card-duration">⏱ 2h</span>
+                </div>
+              </div>
+              <div class="week-card" data-week="2" data-tags="historia">
+                <div class="week-card-top">
+                  <span class="week-card-badge">Aula 02 • Semana 2</span>
+                  <h4>História da música e do videoclipe</h4>
+                  <p class="week-summary">Do vinil ao streaming; do cinema mudo à era do YouTube/TikTok.</p>
+                  <div class="week-split"><span class="split-teoria">📖 Teoria</span><span class="split-pratica">🎛 Prática</span></div>
+                </div>
+                <div class="week-card-footer">
+                  <span class="month-tag tag-historia">História & Arte</span>
+                  <span class="week-card-duration">⏱ 2h</span>
+                </div>
+              </div>
+              <div class="week-card" data-week="3" data-tags="fisica">
+                <div class="week-card-top">
+                  <span class="week-card-badge">Aula 03 • Semana 3</span>
+                  <h4>Introdução à DAW e à Câmera</h4>
+                  <p class="week-summary">Primeiro contato com Ableton/GarageBand e fundamentos de enquadramento.</p>
+                  <div class="week-split"><span class="split-teoria">📖 Teoria</span><span class="split-pratica">🎛 Prática</span></div>
+                </div>
+                <div class="week-card-footer">
+                  <span class="month-tag tag-fisica">Física & Tecnologia</span>
+                  <span class="week-card-duration">⏱ 2h</span>
+                </div>
+              </div>
+              <div class="week-card" data-week="4" data-tags="historia">
+                <div class="week-card-top">
+                  <span class="week-card-badge">Aula 04 • Semana 4</span>
+                  <h4>Referências Criativas e Moodboard</h4>
+                  <p class="week-summary">Análise da identidade sonora e visual de artistas + criação do moodboard.</p>
+                  <div class="week-split"><span class="split-teoria">📖 Teoria</span><span class="split-pratica">🎛 Prática</span></div>
+                </div>
+                <div class="week-card-footer">
+                  <span class="month-tag tag-historia">História & Arte</span>
+                  <span class="week-card-duration">⏱ 2h</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mês 2 -->
+          <div class="month-pane" id="month-pane-2">
+            <div class="month-pane-header">
+              <h3>Mês 2: Composição e Identidade Visual</h3>
+              <p>Eixo: Criação Musical + Identidade Visual. Teoria musical aplicada e branding artístico.</p>
+            </div>
+            <div class="weeks-grid">
+              <div class="week-card" data-week="5" data-tags="criacao">
+                <div class="week-card-top">
+                  <span class="week-card-badge">Aula 05 • Semana 5</span>
+                  <h4>Teoria Musical: Ritmo e Acordes</h4>
+                  <p class="week-summary">BPM, compasso, escalas e primeiros acordes programados na DAW.</p>
+                  <div class="week-split"><span class="split-teoria">📖 Teoria</span><span class="split-pratica">🎛 Prática</span></div>
+                </div>
+                <div class="week-card-footer">
+                  <span class="month-tag tag-criacao">Criação & Composição</span>
+                  <span class="week-card-duration">⏱ 2h</span>
+                </div>
+              </div>
+              <div class="week-card" data-week="6" data-tags="criacao">
+                <div class="week-card-top">
+                  <span class="week-card-badge">Aula 06 • Semana 6</span>
+                  <h4>Melodia, Harmonia e Estrutura</h4>
+                  <p class="week-summary">Progressões harmônicas, baixo e primeiro rascunho da linha melódica.</p>
+                  <div class="week-split"><span class="split-teoria">📖 Teoria</span><span class="split-pratica">🎛 Prática</span></div>
+                </div>
+                <div class="week-card-footer">
+                  <span class="month-tag tag-criacao">Criação & Composição</span>
+                  <span class="week-card-duration">⏱ 2h</span>
+                </div>
+              </div>
+              <div class="week-card" data-week="7" data-tags="criacao">
+                <div class="week-card-top">
+                  <span class="week-card-badge">Aula 07 • Semana 7</span>
+                  <h4>Escrita de Letras e Storytelling</h4>
+                  <p class="week-summary">Prosódia, rima, métrica e criação coletiva da letra da música.</p>
+                  <div class="week-split"><span class="split-teoria">📖 Teoria</span><span class="split-pratica">🎛 Prática</span></div>
+                </div>
+                <div class="week-card-footer">
+                  <span class="month-tag tag-criacao">Criação & Composição</span>
+                  <span class="week-card-duration">⏱ 2h</span>
+                </div>
+              </div>
+              <div class="week-card" data-week="8" data-tags="historia">
+                <div class="week-card-top">
+                  <span class="week-card-badge">Aula 08 • Semana 8</span>
+                  <h4>Identidade Artística e Branding</h4>
+                  <p class="week-summary">Psicologia das cores, tipografia e criação do logo e capa do single.</p>
+                  <div class="week-split"><span class="split-teoria">📖 Teoria</span><span class="split-pratica">🎛 Prática</span></div>
+                </div>
+                <div class="week-card-footer">
+                  <span class="month-tag tag-historia">História & Arte</span>
+                  <span class="week-card-duration">⏱ 2h</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mês 3 -->
+          <div class="month-pane" id="month-pane-3">
+            <div class="month-pane-header">
+              <h3>Mês 3: Pré-Produção Completa</h3>
+              <p>Eixo: Planejamento Audiovisual. Gravação de guias, roteirização e storyboard do videoclipe.</p>
+            </div>
+            <div class="weeks-grid">
+              <div class="week-card" data-week="9" data-tags="criacao">
+                <div class="week-card-top">
+                  <span class="week-card-badge">Aula 09 • Semana 9</span>
+                  <h4>Pré-Produção Musical na DAW</h4>
+                  <p class="week-summary">Arranjo, papéis da equipe e gravação das primeiras guias no metrônomo.</p>
+                  <div class="week-split"><span class="split-teoria">📖 Teoria</span><span class="split-pratica">🎛 Prática</span></div>
+                </div>
+                <div class="week-card-footer">
+                  <span class="month-tag tag-criacao">Criação & Composição</span>
+                  <span class="week-card-duration">⏱ 2h</span>
+                </div>
+              </div>
+              <div class="week-card" data-week="10" data-tags="criacao">
+                <div class="week-card-top">
+                  <span class="week-card-badge">Aula 10 • Semana 10</span>
+                  <h4>Roteirização do Clipe</h4>
+                  <p class="week-summary">Narrativa visual, locações, figurino e escrita colaborativa do roteiro.</p>
+                  <div class="week-split"><span class="split-teoria">📖 Teoria</span><span class="split-pratica">🎛 Prática</span></div>
+                </div>
+                <div class="week-card-footer">
+                  <span class="month-tag tag-criacao">Criação & Composição</span>
+                  <span class="week-card-duration">⏱ 2h</span>
+                </div>
+              </div>
+              <div class="week-card" data-week="11" data-tags="criacao">
+                <div class="week-card-top">
+                  <span class="week-card-badge">Aula 11 • Semana 11</span>
+                  <h4>Storyboard: Enquadramentos e Câmera</h4>
+                  <p class="week-summary">Tipos de plano, movimentos de câmera e desenho coletivo do storyboard.</p>
+                  <div class="week-split"><span class="split-teoria">📖 Teoria</span><span class="split-pratica">🎛 Prática</span></div>
+                </div>
+                <div class="week-card-footer">
+                  <span class="month-tag tag-criacao">Criação & Composição</span>
+                  <span class="week-card-duration">⏱ 2h</span>
+                </div>
+              </div>
+              <div class="week-card" data-week="12" data-tags="criacao">
+                <div class="week-card-top">
+                  <span class="week-card-badge">Aula 12 • Semana 12</span>
+                  <h4>Ensaios e Direção de Arte</h4>
+                  <p class="week-summary">Ensaio final, Call Sheet, lista de props e preparação do set de filmagem.</p>
+                  <div class="week-split"><span class="split-teoria">📖 Teoria</span><span class="split-pratica">🎛 Prática</span></div>
+                </div>
+                <div class="week-card-footer">
+                  <span class="month-tag tag-criacao">Criação & Composição</span>
+                  <span class="week-card-duration">⏱ 2h</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mês 4 -->
+          <div class="month-pane" id="month-pane-4">
+            <div class="month-pane-header">
+              <h3>Mês 4: Produção — Estúdio + Set de Filmagem</h3>
+              <p>Eixo: Captura Profissional. Gravação profissional de vozes e instrumentos e set de filmagem.</p>
+            </div>
+            <div class="weeks-grid">
+              <div class="week-card" data-week="13" data-tags="fisica">
+                <div class="week-card-top">
+                  <span class="week-card-badge">Aula 13 • Semana 13</span>
+                  <h4>Gravação de Vozes em Estúdio</h4>
+                  <p class="week-summary">Técnica de captação de vocais, posicionamento de microfone e ganho.</p>
+                  <div class="week-split"><span class="split-teoria">📖 Teoria</span><span class="split-pratica">🎛 Prática</span></div>
+                </div>
+                <div class="week-card-footer">
+                  <span class="month-tag tag-fisica">Física & Tecnologia</span>
+                  <span class="week-card-duration">⏱ 2h</span>
+                </div>
+              </div>
+              <div class="week-card" data-week="14" data-tags="fisica">
+                <div class="week-card-top">
+                  <span class="week-card-badge">Aula 14 • Semana 14</span>
+                  <h4>Gravação de Instrumentos</h4>
+                  <p class="week-summary">Posicionamento de microfones, acústica e captação de violão, guitarra e percussão.</p>
+                  <div class="week-split"><span class="split-teoria">📖 Teoria</span><span class="split-pratica">🎛 Prática</span></div>
+                </div>
+                <div class="week-card-footer">
+                  <span class="month-tag tag-fisica">Física & Tecnologia</span>
+                  <span class="week-card-duration">⏱ 2h</span>
+                </div>
+              </div>
+              <div class="week-card" data-week="15" data-tags="criacao">
+                <div class="week-card-top">
+                  <span class="week-card-badge">Aula 15 • Semana 15</span>
+                  <h4>Set de Filmagem: Cenas Principais</h4>
+                  <p class="week-summary">Direção de cena, iluminação criativa e gravação do playback (lip sync).</p>
+                  <div class="week-split"><span class="split-teoria">📖 Teoria</span><span class="split-pratica">🎛 Prática</span></div>
+                </div>
+                <div class="week-card-footer">
+                  <span class="month-tag tag-criacao">Criação & Composição</span>
+                  <span class="week-card-duration">⏱ 2h</span>
+                </div>
+              </div>
+              <div class="week-card" data-week="16" data-tags="criacao">
+                <div class="week-card-top">
+                  <span class="week-card-badge">Aula 16 • Semana 16</span>
+                  <h4>Set de Filmagem: B-rolls e Detalhes</h4>
+                  <p class="week-summary">Captura de tomadas complementares, takes de detalhe e backup DIT.</p>
+                  <div class="week-split"><span class="split-teoria">📖 Teoria</span><span class="split-pratica">🎛 Prática</span></div>
+                </div>
+                <div class="week-card-footer">
+                  <span class="month-tag tag-criacao">Criação & Composição</span>
+                  <span class="week-card-duration">⏱ 2h</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mês 5 -->
+          <div class="month-pane" id="month-pane-5">
+            <div class="month-pane-header">
+              <h3>Mês 5: Pós-Produção — Mixagem e Edição</h3>
+              <p>Eixo: Finalização Técnica. Mixagem da música e edição do vídeo com color grading.</p>
+            </div>
+            <div class="weeks-grid">
+              <div class="week-card" data-week="17" data-tags="fisica">
+                <div class="week-card-top">
+                  <span class="week-card-badge">Aula 17 • Semana 17</span>
+                  <h4>Mixagem I: EQ &amp; Compressão</h4>
+                  <p class="week-summary">Equalização de frequências, balanço de volume e controle de dinâmica na DAW.</p>
+                  <div class="week-split"><span class="split-teoria">📖 Teoria</span><span class="split-pratica">🎛 Prática</span></div>
+                </div>
+                <div class="week-card-footer">
+                  <span class="month-tag tag-fisica">Física & Tecnologia</span>
+                  <span class="week-card-duration">⏱ 2h</span>
+                </div>
+              </div>
+              <div class="week-card" data-week="18" data-tags="fisica">
+                <div class="week-card-top">
+                  <span class="week-card-badge">Aula 18 • Semana 18</span>
+                  <h4>Mixagem II: Efeitos e Exportação</h4>
+                  <p class="week-summary">Reverb, delay, automações e renderização do áudio final (wav/mp3).</p>
+                  <div class="week-split"><span class="split-teoria">📖 Teoria</span><span class="split-pratica">🎛 Prática</span></div>
+                </div>
+                <div class="week-card-footer">
+                  <span class="month-tag tag-fisica">Física & Tecnologia</span>
+                  <span class="week-card-duration">⏱ 2h</span>
+                </div>
+              </div>
+              <div class="week-card" data-week="19" data-tags="criacao">
+                <div class="week-card-top">
+                  <span class="week-card-badge">Aula 19 • Semana 19</span>
+                  <h4>Edição de Vídeo I: Montagem</h4>
+                  <p class="week-summary">Sincronização A/V, rough cut e ritmo de edição alinhado à música.</p>
+                  <div class="week-split"><span class="split-teoria">📖 Teoria</span><span class="split-pratica">🎛 Prática</span></div>
+                </div>
+                <div class="week-card-footer">
+                  <span class="month-tag tag-criacao">Criação & Composição</span>
+                  <span class="week-card-duration">⏱ 2h</span>
+                </div>
+              </div>
+              <div class="week-card" data-week="20" data-tags="criacao">
+                <div class="week-card-top">
+                  <span class="week-card-badge">Aula 20 • Semana 20</span>
+                  <h4>Edição de Vídeo II: Cor e Look</h4>
+                  <p class="week-summary">Color grading, correção de cor, títulos e exportação final do clipe.</p>
+                  <div class="week-split"><span class="split-teoria">📖 Teoria</span><span class="split-pratica">🎛 Prática</span></div>
+                </div>
+                <div class="week-card-footer">
+                  <span class="month-tag tag-criacao">Criação & Composição</span>
+                  <span class="week-card-duration">⏱ 2h</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mês 6 -->
+          <div class="month-pane" id="month-pane-6">
+            <div class="month-pane-header">
+              <h3>Mês 6: Lançamento e Celebração</h3>
+              <p>Eixo: Mercado, Marketing e Show. Lançamento digital e show ao vivo de culminância.</p>
+            </div>
+            <div class="weeks-grid">
+              <div class="week-card" data-week="21" data-tags="fisica">
+                <div class="week-card-top">
+                  <span class="week-card-badge">Aula 21 • Semana 21</span>
+                  <h4>Masterização e Render Final</h4>
+                  <p class="week-summary">Loudness para streaming e renderização em H.264/H.265 — produto finalizado.</p>
+                  <div class="week-split"><span class="split-teoria">📖 Teoria</span><span class="split-pratica">🎛 Prática</span></div>
+                </div>
+                <div class="week-card-footer">
+                  <span class="month-tag tag-fisica">Física & Tecnologia</span>
+                  <span class="week-card-duration">⏱ 2h</span>
+                </div>
+              </div>
+              <div class="week-card" data-week="22" data-tags="mercado">
+                <div class="week-card-top">
+                  <span class="week-card-badge">Aula 22 • Semana 22</span>
+                  <h4>Direitos Autorais e Distribuição</h4>
+                  <p class="week-summary">Royalties, ISRC, distribuidoras digitais e como monetizar a música.</p>
+                  <div class="week-split"><span class="split-teoria">📖 Teoria</span><span class="split-pratica">🎛 Prática</span></div>
+                </div>
+                <div class="week-card-footer">
+                  <span class="month-tag tag-mercado">Mercado & Empreend.</span>
+                  <span class="week-card-duration">⏱ 2h</span>
+                </div>
+              </div>
+              <div class="week-card" data-week="23" data-tags="mercado">
+                <div class="week-card-top">
+                  <span class="week-card-badge">Aula 23 • Semana 23</span>
+                  <h4>Estratégia de Lançamento Digital</h4>
+                  <p class="week-summary">Teasers, pitching de playlist, social media e ensaio geral do show.</p>
+                  <div class="week-split"><span class="split-teoria">📖 Teoria</span><span class="split-pratica">🎛 Prática</span></div>
+                </div>
+                <div class="week-card-footer">
+                  <span class="month-tag tag-mercado">Mercado & Empreend.</span>
+                  <span class="week-card-duration">⏱ 2h</span>
+                </div>
+              </div>
+              <div class="week-card" data-week="24" data-tags="mercado">
+                <div class="week-card-top">
+                  <span class="week-card-badge">Aula 24 • Semana 24</span>
+                  <h4>🎉 Culminância: Show + Première</h4>
+                  <p class="week-summary">Show ao vivo da turma, première do clipe oficial e entrega de certificados.</p>
+                  <div class="week-split"><span class="split-pratica">🎤 Show ao Vivo</span><span class="split-pratica">🎬 Première</span></div>
+                </div>
+                <div class="week-card-footer">
+                  <span class="month-tag tag-mercado">Mercado & Empreend.</span>
+                  <span class="week-card-duration">⏱ 4h+</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Painel de Detalhes (Direita) - Vira Bottom Sheet no Mobile -->
+      <div class="calendar-detail-panel" id="detail-panel">
+        <div class="drawer-handle" id="drawer-close-handle"></div>
+        
+        <!-- Semana 1 -->
+        <div class="detail-card active" id="detail-week-1">
+          <div class="detail-header">
+            <span class="detail-week-num">Semana 01 • Aula 01</span>
+            <h2>🔬 A física do som e da imagem — ondas, frequência, luz e cores</h2>
+          </div>
+          <p class="detail-desc">Experimentos práticos para entender o som e a imagem como fenômenos físicos. Os alunos "vêem" o som e entendem como a luz forma cores — a base de tudo na produção audiovisual.</p>
+          
+          <div>
+            <div class="detail-section-title">📖 1ª Hora: Teoria e Conceitos</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Ondas sonoras: o que vibra e por que ouvimos</span></li>
+              <li><input type="checkbox"> <span>Frequência (Hz): grave, médio e agudo — o espectro audível</span></li>
+              <li><input type="checkbox"> <span>Amplitude (dB): volume, intensidade e limites da audição</span></li>
+              <li><input type="checkbox"> <span>Luz e cores: como o olho vê, RGB, temperatura de cor</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">🎹 2ª Hora: Prática e Criação</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Experimento acústico: visualizando ondas na prática</span></li>
+              <li><input type="checkbox"> <span>Primeiro contato com a DAW: abrir o projeto e gravar um áudio ambiente</span></li>
+              <li><input type="checkbox"> <span>Análise de forma de onda: identificar transientes e amplitude</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">Referências Pedagógicas</div>
+            <div class="detail-ref-tags">
+              <a href="https://pt.wikipedia.org/wiki/Ac%C3%BAstica" target="_blank" class="detail-ref-pill">Anhembi: Física do Som</a>
+              <a href="http://basenacionalcomum.mec.gov.br/" target="_blank" class="detail-ref-pill">BNCC: Ciências da Natureza</a>
+            </div>
+          </div>
+
+          <div class="detail-deliverable">
+            <div class="detail-deliv-icon">📦</div>
+            <div class="detail-deliv-text">
+              <h4>Entregável do Mês 1</h4>
+              <p>Cada aluno entrega um "diário de percepção sonora" — anotações sobre os sons que percebem no dia a dia. A turma define coletivamente o gênero musical.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Semana 2 -->
+        <div class="detail-card" id="detail-week-2">
+          <div class="detail-header">
+            <span class="detail-week-num">Semana 02 • Aula 02</span>
+            <h2>📽️ História da música e do videoclipe — do vinil ao streaming</h2>
+          </div>
+          <p class="detail-desc">Uma viagem pela história cultural da música e do audiovisual: como cada era moldou a arte sonora e visual, e como chegamos ao clipe moderno.</p>
+          
+          <div>
+            <div class="detail-section-title">📖 1ª Hora: Teoria e Conceitos</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Do vinil ao streaming: a evolução da música gravada</span></li>
+              <li><input type="checkbox"> <span>Marcos do videoclipe: a era dourada da MTV e clipes icônicos</span></li>
+              <li><input type="checkbox"> <span>A era do vídeo vertical: YouTube, TikTok e a democratização digital</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">🎹 2ª Hora: Prática e Criação</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Escuta e apreciação comentada de 3 obras de referência escolhidas pela turma</span></li>
+              <li><input type="checkbox"> <span>Rascunho de conceito: brainstorming coletivo para a temática da música do grupo</span></li>
+              <li><input type="checkbox"> <span>Criação do documento inicial de projeto da obra</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">Referências Pedagógicas</div>
+            <div class="detail-ref-tags">
+              <a href="https://pt.wikipedia.org/wiki/Hist%C3%B3ria_da_m%C3%BAsica" target="_blank" class="detail-ref-pill">Anhembi: História da Música</a>
+              <a href="http://basenacionalcomum.mec.gov.br/" target="_blank" class="detail-ref-pill">BNCC: Ciências Humanas</a>
+            </div>
+          </div>
+
+          <div class="detail-deliverable">
+            <div class="detail-deliv-icon">📦</div>
+            <div class="detail-deliv-text">
+              <h4>Entregável do Mês 1</h4>
+              <p>Cada aluno entrega um "diário de percepção sonora" — anotações sobre os sons que percebem no dia a dia. A turma define coletivamente o gênero musical.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Semana 3 -->
+        <div class="detail-card" id="detail-week-3">
+          <div class="detail-header">
+            <span class="detail-week-num">Semana 03 • Aula 03</span>
+            <h2>💻 Introdução à DAW (Ableton/GarageBand) e câmera</h2>
+          </div>
+          <p class="detail-desc">Primeiro contato com as ferramentas de produção: a DAW para áudio e a câmera para vídeo. Os alunos exploram ambos os mundos na mesma aula.</p>
+          
+          <div>
+            <div class="detail-section-title">📖 1ª Hora: Teoria e Conceitos</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Interface da DAW: timeline, trilhas, metrônomo e monitoração</span></li>
+              <li><input type="checkbox"> <span>Fundamentos de câmera: foco, exposição, enquadramento e regra dos terços</span></li>
+              <li><input type="checkbox"> <span>Divisão de papéis da produção: vocalistas, produtores, câmeras e diretores</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">🎹 2ª Hora: Prática e Criação</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Gravação da primeira guia de voz ou palmas no metrônomo (treino de timing/grade)</span></li>
+              <li><input type="checkbox"> <span>Exercício prático de enquadramento: capturar 3 planos diferentes com o celular</span></li>
+              <li><input type="checkbox"> <span>Organização de arquivos da pasta do projeto final</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">Referências Pedagógicas</div>
+            <div class="detail-ref-tags">
+              <a href="https://pt.wikipedia.org/wiki/Estac%C3%A3o_de_trabalho_de_%C3%A1udio_digital" target="_blank" class="detail-ref-pill">Anhembi: Workstations Digitais</a>
+              <a href="../dozeroaohit.php" target="_blank" class="detail-ref-pill">Do Zero Ao Hit: Intro DAW</a>
+            </div>
+          </div>
+
+          <div class="detail-deliverable">
+            <div class="detail-deliv-icon">📦</div>
+            <div class="detail-deliv-text">
+              <h4>Entregável do Mês 1</h4>
+              <p>Cada aluno entrega um "diário de percepção sonora" — anotações sobre os sons que percebem no dia a dia. A turma define coletivamente o gênero musical.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Semana 4 -->
+        <div class="detail-card" id="detail-week-4">
+          <div class="detail-header">
+            <span class="detail-week-num">Semana 04 • Aula 04</span>
+            <h2>🎨 Referências criativas — identidade sonora e visual</h2>
+          </div>
+          <p class="detail-desc">A turma mergulha nas obras de artistas que admira, aprendendo a ler a linguagem sonora e visual de cada um. O resultado: o moodboard que vai guiar todo o projeto.</p>
+          
+          <div>
+            <div class="detail-section-title">📖 1ª Hora: Teoria e Conceitos</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Conceito de identidade artística: por que certos artistas são únicos?</span></li>
+              <li><input type="checkbox"> <span>Análise de timbres e paleta sonora das referências</span></li>
+              <li><input type="checkbox"> <span>Estética visual das referências: iluminação, figurino e tom de cor</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">🎹 2ª Hora: Prática e Criação</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Workshop de referências: cada aluno apresenta seus artistas inspiradores</span></li>
+              <li><input type="checkbox"> <span>Criação coletiva do moodboard oficial do projeto (estilo de som e imagens)</span></li>
+              <li><input type="checkbox"> <span>Fechamento do briefing artístico e definição do gênero musical</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">Referências Pedagógicas</div>
+            <div class="detail-ref-tags">
+              <a href="../dozeroaohit.php" target="_blank" class="detail-ref-pill">Do Zero Ao Hit: Referências</a>
+              <a href="https://pt.wikipedia.org/wiki/Identidade_visual" target="_blank" class="detail-ref-pill">Análise de Identidade</a>
+            </div>
+          </div>
+
+          <div class="detail-deliverable">
+            <div class="detail-deliv-icon">📦</div>
+            <div class="detail-deliv-text">
+              <h4>Entregável do Mês 1</h4>
+              <p>Cada aluno entrega um "diário de percepção sonora" — anotações sobre os sons que percebem no dia a dia. A turma define coletivamente o gênero musical.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Semana 5 -->
+        <div class="detail-card" id="detail-week-5">
+          <div class="detail-header">
+            <span class="detail-week-num">Semana 05 • Aula 05</span>
+            <h2>🎹 Teoria musical aplicada — ritmo, compasso, escalas e acordes</h2>
+          </div>
+          <p class="detail-desc">A base da música de forma prática: os conceitos são ensinados a serviço da criação. Tudo começa pelo ritmo e pelas notas que formam os acordes.</p>
+          
+          <div>
+            <div class="detail-section-title">📖 1ª Hora: Teoria e Conceitos</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Ritmo e andamento: o que é BPM, pulsação e compasso simples (4/4)</span></li>
+              <li><input type="checkbox"> <span>As 12 notas cromáticas e o teclado como mapa visual na DAW</span></li>
+              <li><input type="checkbox"> <span>Escala maior e menor: a base emotiva das melodias</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">🎹 2ª Hora: Prática e Criação</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Programação de bateria digital (pilar Ritmo) na DAW usando a grade (grid)</span></li>
+              <li><input type="checkbox"> <span>Montagem de um padrão rítmico clássico (Boombap, Trap, Funk ou Pop)</span></li>
+              <li><input type="checkbox"> <span>Definição do BPM oficial da música do projeto</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">Referências Pedagógicas</div>
+            <div class="detail-ref-tags">
+              <a href="https://pt.wikipedia.org/wiki/Percep%C3%A7%C3%A3o_musical" target="_blank" class="detail-ref-pill">Anhembi: Percepção Musical</a>
+              <a href="https://pt.wikipedia.org/wiki/Teoria_musical" target="_blank" class="detail-ref-pill">Anhembi: Teoria Musical</a>
+            </div>
+          </div>
+
+          <div class="detail-deliverable">
+            <div class="detail-deliv-icon">📦</div>
+            <div class="detail-deliv-text">
+              <h4>Entregável do Mês 2</h4>
+              <p>Rascunho da letra e harmonia do projeto da turma. Moodboard visual e artístico coletivo definido (nome, cores, logo inicial).</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Semana 6 -->
+        <div class="detail-card" id="detail-week-6">
+          <div class="detail-header">
+            <span class="detail-week-num">Semana 06 • Aula 06</span>
+            <h2>🎶 Melodia, harmonia e estrutura de uma música</h2>
+          </div>
+          <p class="detail-desc">Onde a teoria vira arte. Os alunos aprendem como a melodia interage com a harmonia e organizam tudo dentro de uma estrutura musical coerente.</p>
+          
+          <div>
+            <div class="detail-section-title">📖 1ª Hora: Teoria e Conceitos</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Estrutura formal da música pop: Intro, Verso, Refrão, Ponte, Outro</span></li>
+              <li><input type="checkbox"> <span>Progressões harmônicas clássicas (campo harmônico e acordes comuns)</span></li>
+              <li><input type="checkbox"> <span>Criação melódica: o que torna um refrão marcante (hooks)</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">🎹 2ª Hora: Prática e Criação</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Programação dos acordes (pilar Harmonia) na DAW usando instrumentos virtuais</span></li>
+              <li><input type="checkbox"> <span>Desenvolvimento do sintetizador de baixo (pilar Baixo) seguindo as fundamentais</span></li>
+              <li><input type="checkbox"> <span>Rascunho da linha melódica do refrão na DAW</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">Referências Pedagógicas</div>
+            <div class="detail-ref-tags">
+              <a href="https://pt.wikipedia.org/wiki/Harmonia_(m%C3%BAsica)" target="_blank" class="detail-ref-pill">Anhembi: Noções de Harmonia</a>
+              <a href="https://pt.wikipedia.org/wiki/Arranjo_(m%C3%BAsica)" target="_blank" class="detail-ref-pill">Anhembi: Instrumentação e Arranjo</a>
+            </div>
+          </div>
+
+          <div class="detail-deliverable">
+            <div class="detail-deliv-icon">📦</div>
+            <div class="detail-deliv-text">
+              <h4>Entregável do Mês 2</h4>
+              <p>Rascunho da letra e harmonia do projeto da turma. Moodboard visual e artístico coletivo definido (nome, cores, logo inicial).</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Semana 7 -->
+        <div class="detail-card" id="detail-week-7">
+          <div class="detail-header">
+            <span class="detail-week-num">Semana 07 • Aula 07</span>
+            <h2>✍️ Escrita de letras — storytelling, rima e métrica</h2>
+          </div>
+          <p class="detail-desc">A arte de contar histórias e transmitir mensagens através de canções. O papel da letra na representatividade e conexão com o público.</p>
+          
+          <div>
+            <div class="detail-section-title">📖 1ª Hora: Teoria e Conceitos</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Prosódia musical: como encaixar a rítmica da palavra na melodia</span></li>
+              <li><input type="checkbox"> <span>Storytelling na letra: desenvolvendo começo, meio e fim da mensagem</span></li>
+              <li><input type="checkbox"> <span>Uso de figuras de linguagem e rimas para sonoridade poética</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">🎹 2ª Hora: Prática e Criação</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Oficina de escrita coletiva: criação das estrofes e refrão do projeto</span></li>
+              <li><input type="checkbox"> <span>Ajuste da métrica das palavras cantadas sobre a base gravada</span></li>
+              <li><input type="checkbox"> <span>Registro escrito oficial da letra da música</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">Referências Pedagógicas</div>
+            <div class="detail-ref-tags">
+              <a href="https://pt.wikipedia.org/wiki/An%C3%A1lise_textual" target="_blank" class="detail-ref-pill">Análise Textual</a>
+              <a href="https://pt.wikipedia.org/wiki/Narrativa_audiovisual" target="_blank" class="detail-ref-pill">Composição e Narrativa</a>
+            </div>
+          </div>
+
+          <div class="detail-deliverable">
+            <div class="detail-deliv-icon">📦</div>
+            <div class="detail-deliv-text">
+              <h4>Entregável do Mês 2</h4>
+              <p>Rascunho da letra e harmonia do projeto da turma. Moodboard visual e artístico coletivo definido (nome, cores, logo inicial).</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Semana 8 -->
+        <div class="detail-card" id="detail-week-8">
+          <div class="detail-header">
+            <span class="detail-week-num">Semana 08 • Aula 08</span>
+            <h2>🎨 Identidade artística — nome, logo, cores, tipografia</h2>
+          </div>
+          <p class="detail-desc">Toda música precisa de uma cara. Os alunos começam a criar a identidade visual do projeto musical.</p>
+          
+          <div>
+            <div class="detail-section-title">📖 1ª Hora: Teoria e Conceitos</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Psicologia das cores no branding artístico</span></li>
+              <li><input type="checkbox"> <span>Tipografia e sua expressão de estilo (sans-serif, display, script)</span></li>
+              <li><input type="checkbox"> <span>Identidade de marcas musicais (capa de single, redes sociais, logos)</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">🎹 2ª Hora: Prática e Criação</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Desenvolvimento coletivo do logotipo oficial da música da turma</span></li>
+              <li><input type="checkbox"> <span>Definição da paleta de cores e tipografias oficiais da obra</span></li>
+              <li><input type="checkbox"> <span>Criação do rascunho de arte de capa para o single</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">Referências Pedagógicas</div>
+            <div class="detail-ref-tags">
+              <a href="https://www.anhembi.br/graduacao/curso/producao-musical/" target="_blank" class="detail-ref-pill">Anhembi: Marketing Musical</a>
+              <a href="https://pt.wikipedia.org/wiki/Branding" target="_blank" class="detail-ref-pill">Design e Branding</a>
+            </div>
+          </div>
+
+          <div class="detail-deliverable">
+            <div class="detail-deliv-icon">📦</div>
+            <div class="detail-deliv-text">
+              <h4>Entregável do Mês 2</h4>
+              <p>Rascunho da letra e harmonia do projeto da turma. Moodboard visual e artístico coletivo definido (nome, cores, logo inicial).</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Semana 9 -->
+        <div class="detail-card" id="detail-week-9">
+          <div class="detail-header">
+            <span class="detail-week-num">Semana 09 • Aula 09</span>
+            <h2>🖥️ Pré-produção musical — arranjo, papéis e guias na DAW</h2>
+          </div>
+          <p class="detail-desc">O arranjo começa a tomar forma digital na DAW, e a turma se divide nas funções necessárias para a execução musical.</p>
+          
+          <div>
+            <div class="detail-section-title">📖 1ª Hora: Teoria e Conceitos</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Conceito de arranjo: como criar dinâmica, tensão e alívio</span></li>
+              <li><input type="checkbox"> <span>Distribuição técnica de papéis (quem canta, quem grava, quem opera a DAW)</span></li>
+              <li><input type="checkbox"> <span>Ambiente de gravação e preparação acústica mínima</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">🎹 2ª Hora: Prática e Criação</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Gravação do metrônomo oficial e inserção de marcadores de arranjo na DAW</span></li>
+              <li><input type="checkbox"> <span>Gravação das primeiras guias oficiais de voz e instrumentos</span></li>
+              <li><input type="checkbox"> <span>Criação do cronograma detalhado de ensaios e gravações</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">Referências Pedagógicas</div>
+            <div class="detail-ref-tags">
+              <a href="https://pt.wikipedia.org/wiki/Arranjo_(m%C3%BAsica)" target="_blank" class="detail-ref-pill">Anhembi: Instrumentação e Arranjo</a>
+              <a href="../dozeroaohit.php" target="_blank" class="detail-ref-pill">Do Zero Ao Hit: Workflow</a>
+            </div>
+          </div>
+
+          <div class="detail-deliverable">
+            <div class="detail-deliv-icon">📦</div>
+            <div class="detail-deliv-text">
+              <h4>Entregável do Mês 3</h4>
+              <p>Roteiro final + Storyboard do clipe aprovados pela turma. Guias de bateria e harmonia gravados na DAW. Tudo pronto para as captações.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Semana 10 -->
+        <div class="detail-card" id="detail-week-10">
+          <div class="detail-header">
+            <span class="detail-week-num">Semana 10 • Aula 10</span>
+            <h2>📝 Roteirização do clipe — narrativa, locações e figurino</h2>
+          </div>
+          <p class="detail-desc">Iniciando o braço audiovisual do projeto. Como traduzir a mensagem da música em imagens.</p>
+          
+          <div>
+            <div class="detail-section-title">📖 1ª Hora: Teoria e Conceitos</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Roteiro literário vs Roteiro técnico: formatação padrão</span></li>
+              <li><input type="checkbox"> <span>Estrutura dramática visual: o arco da narrativa do clipe</span></li>
+              <li><input type="checkbox"> <span>Direção de arte: figurino, objetos (props) e conceito estético</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">🎹 2ª Hora: Prática e Criação</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Escrita colaborativa do roteiro cena a cena da obra</span></li>
+              <li><input type="checkbox"> <span>Definição de figurino e maquiagem dos intérpretes</span></li>
+              <li><input type="checkbox"> <span>Escolha e vistoria das locações da filmagem</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">Referências Pedagógicas</div>
+            <div class="detail-ref-tags">
+              <a href="https://pt.wikipedia.org/wiki/Produ%C3%A7%C3%A3o_audiovisual" target="_blank" class="detail-ref-pill">Produção Audiovisual</a>
+              <a href="https://pt.wikipedia.org/wiki/Roteiro" target="_blank" class="detail-ref-pill">Roteirização</a>
+            </div>
+          </div>
+
+          <div class="detail-deliverable">
+            <div class="detail-deliv-icon">📦</div>
+            <div class="detail-deliv-text">
+              <h4>Entregável do Mês 3</h4>
+              <p>Roteiro final + Storyboard do clipe aprovados pela turma. Guias de bateria e harmonia gravados na DAW. Tudo pronto para as captações.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Semana 11 -->
+        <div class="detail-card" id="detail-week-11">
+          <div class="detail-header">
+            <span class="detail-week-num">Semana 11 • Aula 11</span>
+            <h2>🎬 Storyboard detalhado — enquadramentos e câmera</h2>
+          </div>
+          <p class="detail-desc">Planejamento visual. Desenhando plano a plano como será o clipe para garantir eficiência no dia da filmagem.</p>
+          
+          <div>
+            <div class="detail-section-title">📖 1ª Hora: Teoria e Conceitos</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Tipos de planos cinematográficos (aberto, médio, close, detalhe)</span></li>
+              <li><input type="checkbox"> <span>Movimentos de câmera: Pan, Tilt, Dolly, Gimbal e câmera na mão</span></li>
+              <li><input type="checkbox"> <span>O storyboard como ferramenta de comunicação no set</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">🎹 2ª Hora: Prática e Criação</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Desenho coletivo do storyboard oficial cena por cena</span></li>
+              <li><input type="checkbox"> <span>Decupagem de fotografia: lista oficial de tomadas (Shot List)</span></li>
+              <li><input type="checkbox"> <span>Mapeamento dos planos associados aos compassos da música</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">Referências Pedagógicas</div>
+            <div class="detail-ref-tags">
+              <a href="https://pt.wikipedia.org/wiki/Dire%C3%A7%C3%A3o_de_fotografia" target="_blank" class="detail-ref-pill">Direção de Fotografia</a>
+              <a href="https://pt.wikipedia.org/wiki/Composi%C3%A7%C3%A3o_visual" target="_blank" class="detail-ref-pill">Planejamento Visual</a>
+            </div>
+          </div>
+
+          <div class="detail-deliverable">
+            <div class="detail-deliv-icon">📦</div>
+            <div class="detail-deliv-text">
+              <h4>Entregável do Mês 3</h4>
+              <p>Roteiro final + Storyboard do clipe aprovados pela turma. Guias de bateria e harmonia gravados na DAW. Tudo pronto para as captações.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Semana 12 -->
+        <div class="detail-card" id="detail-week-12">
+          <div class="detail-header">
+            <span class="detail-week-num">Semana 12 • Aula 12</span>
+            <h2>🎸 Ensaios de áudio + preparação da direção de arte</h2>
+          </div>
+          <p class="detail-desc">Últimos preparativos antes de entrar em estúdio e no set de filmagem. Áudio e vídeo correndo em paralelo.</p>
+          
+          <div>
+            <div class="detail-section-title">📖 1ª Hora: Teoria e Conceitos</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Noções de produção executiva: cronograma de set e Call Sheet (ordem do dia)</span></li>
+              <li><input type="checkbox"> <span>Checklist técnico de equipamentos de áudio e vídeo</span></li>
+              <li><input type="checkbox"> <span>Planejamento de maquiagem, props e figurinos de reserva</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">🎹 2ª Hora: Prática e Criação</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Ensaio prático final de gravação musical com metrônomo</span></li>
+              <li><input type="checkbox"> <span>Fechamento e distribuição da Call Sheet oficial com horários de set</span></li>
+              <li><input type="checkbox"> <span>Montagem e teste de iluminação para a filmagem</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">Referências Pedagógicas</div>
+            <div class="detail-ref-tags">
+              <a href="https://pt.wikipedia.org/wiki/Grava%C3%A7%C3%A3o_e_reprodu%C3%A7%C3%A3o_sonora" target="_blank" class="detail-ref-pill">Anhembi: Técnicas de Gravação</a>
+              <a href="https://pt.wikipedia.org/wiki/Produtor_executivo" target="_blank" class="detail-ref-pill">Produção Executiva</a>
+            </div>
+          </div>
+
+          <div class="detail-deliverable">
+            <div class="detail-deliv-icon">📦</div>
+            <div class="detail-deliv-text">
+              <h4>Entregável do Mês 3</h4>
+              <p>Roteiro final + Storyboard do clipe aprovados pela turma. Guias de bateria e harmonia gravados na DAW. Tudo pronto para as captações.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Semana 13 -->
+        <div class="detail-card" id="detail-week-13">
+          <div class="detail-header">
+            <span class="detail-week-num">Semana 13 • Aula 13</span>
+            <h2>🎙️ Gravação de vozes — técnica de microfone, postura e takes</h2>
+          </div>
+          <p class="detail-desc">O estúdio chega à sala de aula (ou locação). Captação definitiva dos vocais com qualidade profissional.</p>
+          
+          <div>
+            <div class="detail-section-title">📖 1ª Hora: Teoria e Conceitos</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Tipos de microfone (dinâmico vs condensador) e padrão polar</span></li>
+              <li><input type="checkbox"> <span>Técnica de proximidade, pop filter e controle de sopros/sibilância</span></li>
+              <li><input type="checkbox"> <span>Psicologia de gravação: como extrair a melhor performance do intérprete</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">🎹 2ª Hora: Prática e Criação</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Sessão de gravação oficial das vozes principais (Lead Vocals) na DAW</span></li>
+              <li><input type="checkbox"> <span>Seleção do melhor take por frase (comping de voz)</span></li>
+              <li><input type="checkbox"> <span>Organização e backup da sessão de gravação de voz</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">Referências Pedagógicas</div>
+            <div class="detail-ref-tags">
+              <a href="https://pt.wikipedia.org/wiki/Grava%C3%A7%C3%A3o_e_reprodu%C3%A7%C3%A3o_sonora" target="_blank" class="detail-ref-pill">Anhembi: Técnicas de Gravação</a>
+              <a href="https://pt.wikipedia.org/wiki/T%C3%A9cnica_vocal" target="_blank" class="detail-ref-pill">Direção Vocal</a>
+            </div>
+          </div>
+
+          <div class="detail-deliverable">
+            <div class="detail-deliv-icon">📦</div>
+            <div class="detail-deliv-text">
+              <h4>Entregável do Mês 4</h4>
+              <p>Áudio bruto gravado com todos os vocais e instrumentos (ready for mix). Material de vídeo bruto completo, organizado e backupeado.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Semana 14 -->
+        <div class="detail-card" id="detail-week-14">
+          <div class="detail-header">
+            <span class="detail-week-num">Semana 14 • Aula 14</span>
+            <h2>🔴 Gravação de instrumentos — captação, dinâmica e camadas</h2>
+          </div>
+          <p class="detail-desc">Captação dos instrumentos reais (violão, guitarra, percussão) que complementarão a base digital.</p>
+          
+          <div>
+            <div class="detail-section-title">📖 1ª Hora: Teoria e Conceitos</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Posicionamento de microfones para gravação de violão/percussão</span></li>
+              <li><input type="checkbox"> <span>Diferença entre gravação em linha (DI) e microfonação de amplificador</span></li>
+              <li><input type="checkbox"> <span>Construção de arranjo com dobras de vocais (backing vocals e apoios)</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">🎹 2ª Hora: Prática e Criação</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Gravação dos instrumentos acústicos/elétricos oficiais na DAW</span></li>
+              <li><input type="checkbox"> <span>Gravação de backing vocals, apoios e dobras de voz</span></li>
+              <li><input type="checkbox"> <span>Consolidação dos arquivos brutos de áudio da música</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">Referências Pedagógicas</div>
+            <div class="detail-ref-tags">
+              <a href="https://pt.wikipedia.org/wiki/Microfone" target="_blank" class="detail-ref-pill">Anhembi: Microfonação</a>
+              <a href="https://pt.wikipedia.org/wiki/Est%C3%Badio_de_grava%C3%A7%C3%A3o" target="_blank" class="detail-ref-pill">Produção de Estúdio</a>
+            </div>
+          </div>
+
+          <div class="detail-deliverable">
+            <div class="detail-deliv-icon">📦</div>
+            <div class="detail-deliv-text">
+              <h4>Entregável do Mês 4</h4>
+              <p>Áudio bruto gravado com todos os vocais e instrumentos (ready for mix). Material de vídeo bruto completo, organizado e backupeado.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Semana 15 -->
+        <div class="detail-card" id="detail-week-15">
+          <div class="detail-header">
+            <span class="detail-week-num">Semana 15 • Aula 15</span>
+            <h2>🎬 Dia de set — captação de vídeo do clipe</h2>
+          </div>
+          <p class="detail-desc">A turma vive a experiência de um set de filmagem real. Gravação das cenas principais do clipe baseadas no storyboard.</p>
+          
+          <div>
+            <div class="detail-section-title">📖 1ª Hora: Teoria e Conceitos</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Regras e segurança fundamentais em um set de filmagem e funções da equipe</span></li>
+              <li><input type="checkbox"> <span>Direção de cena e sincronização labial (lip sync) usando playback</span></li>
+              <li><input type="checkbox"> <span>Direção de fotografia: temperatura da cor e uso de rebatedores</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">🎹 2ª Hora: Prática e Criação</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Filmagem oficial das cenas de performance principal (Master Shots)</span></li>
+              <li><input type="checkbox"> <span>Operação técnica das câmeras e equipe de iluminação ativa</span></li>
+              <li><input type="checkbox"> <span>Acompanhamento do storyboard no set</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">Referências Pedagógicas</div>
+            <div class="detail-ref-tags">
+              <a href="https://pt.wikipedia.org/wiki/Produ%C3%A7%C3%A3o_audiovisual" target="_blank" class="detail-ref-pill">Produção Audiovisual</a>
+              <a href="https://pt.wikipedia.org/wiki/Diretor_de_cinema" target="_blank" class="detail-ref-pill">Direção de Cena</a>
+            </div>
+          </div>
+
+          <div class="detail-deliverable">
+            <div class="detail-deliv-icon">📦</div>
+            <div class="detail-deliv-text">
+              <h4>Entregável do Mês 4</h4>
+              <p>Áudio bruto gravado com todos os vocais e instrumentos (ready for mix). Material de vídeo bruto completo, organizado e backupeado.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Semana 16 -->
+        <div class="detail-card" id="detail-week-16">
+          <div class="detail-header">
+            <span class="detail-week-num">Semana 16 • Aula 16</span>
+            <h2>🎥 Dia de set 2 — cenas complementares e b-roll</h2>
+          </div>
+          <p class="detail-desc">Segundo dia de gravação para garantir que o clipe tenha ritmo e diversidade de imagens na edição.</p>
+          
+          <div>
+            <div class="detail-section-title">📖 1ª Hora: Teoria e Conceitos</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Importância dos b-rolls (cenas de apoio) na edição de videoclipe</span></li>
+              <li><input type="checkbox"> <span>Uso da claquete para sincronia posterior e continuidade de cena</span></li>
+              <li><input type="checkbox"> <span>Rotina de backup seguro no set: o papel do DIT (Digital Imaging Technician)</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">🎹 2ª Hora: Prática e Criação</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Filmagem de b-rolls, takes de detalhe e planos de inserção</span></li>
+              <li><input type="checkbox"> <span>Processo de wrap (desmontagem rápida) e backup imediato dos arquivos</span></li>
+              <li><input type="checkbox"> <span>Organização da pasta do material de vídeo bruto</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">Referências Pedagógicas</div>
+            <div class="detail-ref-tags">
+              <a href="https://en.wikipedia.org/wiki/B-roll" target="_blank" class="detail-ref-pill">Captação B-Roll</a>
+              <a href="https://en.wikipedia.org/wiki/Digital_imaging_technician" target="_blank" class="detail-ref-pill">Gestão de Dados (DIT)</a>
+            </div>
+          </div>
+
+          <div class="detail-deliverable">
+            <div class="detail-deliv-icon">📦</div>
+            <div class="detail-deliv-text">
+              <h4>Entregável do Mês 4</h4>
+              <p>Áudio bruto gravado com todos os vocais e instrumentos (ready for mix). Material de vídeo bruto completo, organizado e backupeado.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Semana 17 -->
+        <div class="detail-card" id="detail-week-17">
+          <div class="detail-header">
+            <span class="detail-week-num">Semana 17 • Aula 17</span>
+            <h2>🎚️ Mixagem parte 1 — equalização, compressão e balanço</h2>
+          </div>
+          <p class="detail-desc">A arte de fazer cada elemento ocupar seu espaço no áudio. Frequência, dinâmica e campo estéreo.</p>
+          
+          <div>
+            <div class="detail-section-title">📖 1ª Hora: Teoria e Conceitos</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Objetivo da mixagem: equilíbrio, inteligibilidade e energia</span></li>
+              <li><input type="checkbox"> <span>Frequências no equalizador (passa-altas, bandas, frequências de conflito)</span></li>
+              <li><input type="checkbox"> <span>Dinâmica e compressores (limiar, razão, ataque, liberação)</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">🎹 2ª Hora: Prática e Criação</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Limpeza de ruídos de áudio e aplicação de equalização corretiva</span></li>
+              <li><input type="checkbox"> <span>Compressão e nivelamento dinâmico das vozes principais</span></li>
+              <li><input type="checkbox"> <span>Balanço inicial de faders (volumes) e posicionamento estéreo (pan)</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">Referências Pedagógicas</div>
+            <div class="detail-ref-tags">
+              <a href="https://pt.wikipedia.org/wiki/Mixagem" target="_blank" class="detail-ref-pill">Anhembi: Mixagem</a>
+              <a href="https://pt.wikipedia.org/wiki/Engenharia_de_%C3%A1udio" target="_blank" class="detail-ref-pill">Engenharia de Áudio</a>
+            </div>
+          </div>
+
+          <div class="detail-deliverable">
+            <div class="detail-deliv-icon">📦</div>
+            <div class="detail-deliv-text">
+              <h4>Entregável do Mês 5</h4>
+              <p>Mixagem de áudio aprovada pela turma. Primeiro corte do clipe (rough cut) editado, colorido e sincronizado com a música.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Semana 18 -->
+        <div class="detail-card" id="detail-week-18">
+          <div class="detail-header">
+            <span class="detail-week-num">Semana 18 • Aula 18</span>
+            <h2>✨ Mixagem parte 2 — efeitos e ouvido crítico</h2>
+          </div>
+          <p class="detail-desc">O toque final: reverb, delay e automações que fazem a mix ganhar vida. Comparação com referências profissionais.</p>
+          
+          <div>
+            <div class="detail-section-title">📖 1ª Hora: Teoria e Conceitos</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Processamento de tempo (reverb e delay) e criação de espaço tridimensional</span></li>
+              <li><input type="checkbox"> <span>Automações criativas de volume e efeitos ao longo do arranjo</span></li>
+              <li><input type="checkbox"> <span>Escuta crítica e referência comparativa (escuta em mono/celular)</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">🎹 2ª Hora: Prática e Criação</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Aplicação de reverb e delay nas trilhas de voz (pilar Efeitos) na DAW</span></li>
+              <li><input type="checkbox"> <span>Automações de volume para dar dinâmica às partes da música</span></li>
+              <li><input type="checkbox"> <span>Bounce (exportação) oficial da mixagem em alta definição</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">Referências Pedagógicas</div>
+            <div class="detail-ref-tags">
+              <a href="https://pt.wikipedia.org/wiki/Processamento_de_sinais_de_%C3%A1udio" target="_blank" class="detail-ref-pill">Anhembi: Processamento de Áudio</a>
+              <a href="https://pt.wikipedia.org/wiki/Efeitos_especiais" target="_blank" class="detail-ref-pill">Efeitos Digitais</a>
+            </div>
+          </div>
+
+          <div class="detail-deliverable">
+            <div class="detail-deliv-icon">📦</div>
+            <div class="detail-deliv-text">
+              <h4>Entregável do Mês 5</h4>
+              <p>Mixagem de áudio aprovada pela turma. Primeiro corte do clipe (rough cut) editado, colorido e sincronizado com a música.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Semana 19 -->
+        <div class="detail-card" id="detail-week-19">
+          <div class="detail-header">
+            <span class="detail-week-num">Semana 19 • Aula 19</span>
+            <h2>✂️ Edição de vídeo parte 1 — corte e sincronização</h2>
+          </div>
+          <p class="detail-desc">Levando o material bruto (footage) para o Premiere ou DaVinci Resolve. Onde o clipe realmente ganha ritmo.</p>
+          
+          <div>
+            <div class="detail-section-title">📖 1ª Hora: Teoria e Conceitos</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Ritmo de montagem: cortes na batida vs cortes na narrativa</span></li>
+              <li><input type="checkbox"> <span>Sincronização por áudio guia e claquete nos editores não-lineares</span></li>
+              <li><input type="checkbox"> <span>Estrutura de edição: montagem em camadas (V1, V2, trilhas de b-roll)</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">🎹 2ª Hora: Prática e Criação</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Importação, organização de mídias e sincronização com a música final</span></li>
+              <li><input type="checkbox"> <span>Criação do primeiro corte bruto estrutural (Assembly Cut)</span></li>
+              <li><input type="checkbox"> <span>Seleção dos melhores takes de performance labial</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">Referências Pedagógicas</div>
+            <div class="detail-ref-tags">
+              <a href="https://pt.wikipedia.org/wiki/Edi%C3%A7%C3%A3o_n%C3%A3o_linear" target="_blank" class="detail-ref-pill">Edição Não Linear</a>
+              <a href="https://pt.wikipedia.org/wiki/Montagem" target="_blank" class="detail-ref-pill">Montagem Cinematográfica</a>
+            </div>
+          </div>
+
+          <div class="detail-deliverable">
+            <div class="detail-deliv-icon">📦</div>
+            <div class="detail-deliv-text">
+              <h4>Entregável do Mês 5</h4>
+              <p>Mixagem de áudio aprovada pela turma. Primeiro corte do clipe (rough cut) editado, colorido e sincronizado com a música.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Semana 20 -->
+        <div class="detail-card" id="detail-week-20">
+          <div class="detail-header">
+            <span class="detail-week-num">Semana 20 • Aula 20</span>
+            <h2>🎨 Edição de vídeo parte 2 — color grading e finalização</h2>
+          </div>
+          <p class="detail-desc">Dando o "look" cinematográfico ao clipe. Correção de cor e adição de efeitos finais.</p>
+          
+          <div>
+            <div class="detail-section-title">📖 1ª Hora: Teoria e Conceitos</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Diferença entre correção de cor primária e color grading criativo</span></li>
+              <li><input type="checkbox"> <span>Teoria da cor aplicada: criar emoção com tons quentes/frios</span></li>
+              <li><input type="checkbox"> <span>Uso de letterbox (barras de cinema) e créditos finais</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">🎹 2ª Hora: Prática e Criação</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Correção de cores dos planos de vídeo do clipe</span></li>
+              <li><input type="checkbox"> <span>Aplicação da paleta de cores (look) combinada no moodboard</span></li>
+              <li><input type="checkbox"> <span>Inserção de créditos finais e logotipos da turma</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">Referências Pedagógicas</div>
+            <div class="detail-ref-tags">
+              <a href="https://pt.wikipedia.org/wiki/Grada%C3%A7%C3%A3o_de_cores" target="_blank" class="detail-ref-pill">Color Grading</a>
+              <a href="https://pt.wikipedia.org/wiki/P%C3%B3s-produ%C3%A7%C3%A3o" target="_blank" class="detail-ref-pill">Pós-Produção Audiovisual</a>
+            </div>
+          </div>
+
+          <div class="detail-deliverable">
+            <div class="detail-deliv-icon">📦</div>
+            <div class="detail-deliv-text">
+              <h4>Entregável do Mês 5</h4>
+              <p>Mixagem de áudio aprovada pela turma. Primeiro corte do clipe (rough cut) editado, colorido e sincronizado com a música.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Semana 21 -->
+        <div class="detail-card" id="detail-week-21">
+          <div class="detail-header">
+            <span class="detail-week-num">Semana 21 • Aula 21</span>
+            <h2>🚀 Masterização e render final</h2>
+          </div>
+          <p class="detail-desc">A última etapa técnica. O áudio recebe o polimento final para streaming e o vídeo ganha seu formato definitivo.</p>
+          
+          <div>
+            <div class="detail-section-title">📖 1ª Hora: Teoria e Conceitos</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>O que é masterização: controle de pico e níveis de loudness (LUFS)</span></li>
+              <li><input type="checkbox"> <span>Formatos de arquivo de áudio (WAV de alta resolução, MP3)</span></li>
+              <li><input type="checkbox"> <span>Codecs de exportação de vídeo (H.264, H.265) e taxas de bits</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">🎹 2ª Hora: Prática e Criação</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Masterização final da música do projeto na DAW</span></li>
+              <li><input type="checkbox"> <span>Renderização final do videoclipe nos formatos padrão de publicação</span></li>
+              <li><input type="checkbox"> <span>Controle de qualidade final (escuta e visualização em telas diferentes)</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">Referências Pedagógicas</div>
+            <div class="detail-ref-tags">
+              <a href="https://pt.wikipedia.org/wiki/Masteriza%C3%A7%C3%A3o" target="_blank" class="detail-ref-pill">Anhembi: Masterização</a>
+              <a href="https://pt.wikipedia.org/wiki/P%C3%B3s-produ%C3%A7%C3%A3o" target="_blank" class="detail-ref-pill">Pós-Produção</a>
+            </div>
+          </div>
+
+          <div class="detail-deliverable">
+            <div class="detail-deliv-icon">🏆</div>
+            <div class="detail-deliv-text">
+              <h4>Entregável Final</h4>
+              <p>Música lançada no Spotify, clipe publicado no YouTube, show ao vivo realizado e certificado de conclusão emitido para cada aluno.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Semana 22 -->
+        <div class="detail-card" id="detail-week-22">
+          <div class="detail-header">
+            <span class="detail-week-num">Semana 22 • Aula 22</span>
+            <h2>💰 Negócios e direitos autorais</h2>
+          </div>
+          <p class="detail-desc">Protegendo a obra e entendendo como o dinheiro e a distribuição funcionam na era do streaming.</p>
+          
+          <div>
+            <div class="detail-section-title">📖 1ª Hora: Teoria e Conceitos</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Registro de obras, direitos de autor e fonograma (ISRC)</span></li>
+              <li><input type="checkbox"> <span>Papel das distribuidoras digitais no streaming de música</span></li>
+              <li><input type="checkbox"> <span>Metadados de publicação (compositores, produtores, direitos autorais)</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">🎹 2ª Hora: Prática e Criação</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Cadastro do fonograma e metadados na distribuidora digital</span></li>
+              <li><input type="checkbox"> <span>Planejamento de publicação e otimização de metadados no YouTube</span></li>
+              <li><input type="checkbox"> <span>Simulação de divisão de royalties coletivos</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">Referências Pedagógicas</div>
+            <div class="detail-ref-tags">
+              <a href="https://pt.wikipedia.org/wiki/Direito_autoral" target="_blank" class="detail-ref-pill">Anhembi: Direito Autoral</a>
+              <a href="https://pt.wikipedia.org/wiki/Distribui%C3%A7%C3%A3o_digital" target="_blank" class="detail-ref-pill">Distribuição Digital</a>
+            </div>
+          </div>
+
+          <div class="detail-deliverable">
+            <div class="detail-deliv-icon">🏆</div>
+            <div class="detail-deliv-text">
+              <h4>Entregável Final</h4>
+              <p>Música lançada no Spotify, clipe publicado no YouTube, show ao vivo realizado e certificado de conclusão emitido para cada aluno.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Semana 23 -->
+        <div class="detail-card" id="detail-week-23">
+          <div class="detail-header">
+            <span class="detail-week-num">Semana 23 • Aula 23</span>
+            <h2>📱 Estratégia de lançamento e ensaio geral</h2>
+          </div>
+          <p class="detail-desc">Preparação para o lançamento digital e para o show presencial. Criando o hype final.</p>
+          
+          <div>
+            <div class="detail-section-title">📖 1ª Hora: Teoria e Conceitos</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Marketing de guerrilha: teasers de vídeo (Reels/TikTok)</span></li>
+              <li><input type="checkbox"> <span>Estratégia de pitching de playlist editorial</span></li>
+              <li><input type="checkbox"> <span>Cronograma detalhado da estreia da música e do show</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">🎹 2ª Hora: Prática e Criação</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Criação e edição de 3 teasers promocionais curtos (vídeo vertical)</span></li>
+              <li><input type="checkbox"> <span>Ensaio geral de performance ao vivo da música</span></li>
+              <li><input type="checkbox"> <span>Montagem e teste final do projetor de vídeo e som do show</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">Referências Pedagógicas</div>
+            <div class="detail-ref-tags">
+              <a href="https://pt.wikipedia.org/wiki/Marketing_digital" target="_blank" class="detail-ref-pill">Anhembi: Marketing Digital</a>
+              <a href="https://pt.wikipedia.org/wiki/Gest%C3%A3o_de_eventos" target="_blank" class="detail-ref-pill">Gestão de Eventos</a>
+            </div>
+          </div>
+
+          <div class="detail-deliverable">
+            <div class="detail-deliv-icon">🏆</div>
+            <div class="detail-deliv-text">
+              <h4>Entregável Final</h4>
+              <p>Música lançada no Spotify, clipe publicado no YouTube, show ao vivo realizado e certificado de conclusão emitido para cada aluno.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Semana 24 -->
+        <div class="detail-card" id="detail-week-24">
+          <div class="detail-header">
+            <span class="detail-week-num">Semana 24 • Aula 24</span>
+            <h2>🎉 Culminância Pedagógica — Lançamento e Show</h2>
+          </div>
+          <p class="detail-desc">O grande final. Apresentação para a escola e entrega dos certificados oficiais.</p>
+          
+          <div>
+            <div class="detail-section-title">📖 1ª Hora: Teoria e Conceitos</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Avaliação final do projeto e discussão pós-lançamento</span></li>
+              <li><input type="checkbox"> <span>Análise de estatísticas iniciais da música (plays/visualizações)</span></li>
+              <li><input type="checkbox"> <span>Roda de feedback pedagógico</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">🎹 2ª Hora: Prática e Criação</div>
+            <ul class="detail-checklist">
+              <li><input type="checkbox"> <span>Apresentação musical ao vivo do projeto da turma</span></li>
+              <li><input type="checkbox"> <span>Exibição oficial do videoclipe finalizado (Première)</span></li>
+              <li><input type="checkbox"> <span>Entrega solene dos certificados oficiais de conclusão do curso</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="detail-section-title">Referências Pedagógicas</div>
+            <div class="detail-ref-tags">
+              <a href="https://www.anhembi.br/" target="_blank" class="detail-ref-pill">Anhembi: Vida & Carreira</a>
+              <a href="https://pt.wikipedia.org/wiki/Pedagogia_de_projetos" target="_blank" class="detail-ref-pill">Culminância Pedagógica</a>
+            </div>
+          </div>
+
+          <div class="detail-deliverable">
+            <div class="detail-deliv-icon">🏆</div>
+            <div class="detail-deliv-text">
+              <h4>Entregável Final</h4>
+              <p>Música lançada no Spotify, clipe publicado no YouTube, show ao vivo realizado e certificado de conclusão emitido para cada aluno.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+      <!-- METODOLOGIA DO ZERO AO HIT -->
+      <div class="method-box" style="margin-top: 3.5rem;">
+        <h3>🎹 Metodologia "Do Zero Ao Hit" — Os 5 passos da produção musical digital</h3>
+        <p style="color:var(--muted); font-size:.9rem; margin-bottom:1.25rem;">
+          A metodologia proprietária da Umimbae é focada inteiramente em produção musical digital, guiando os alunos na construção de uma música do início ao fim através de 5 pilares práticos e fundamentais.
+        </p>
+        <div class="method-steps">
+          <div class="ms">
+            <span class="ms-num" style="color:var(--purple);">01</span>
+            <div class="ms-name">RITMO</div>
+            <div class="ms-desc">Batidas, loops de bateria e andamento (BPM)</div>
+          </div>
+          <div class="ms">
+            <span class="ms-num" style="color:var(--pink);">02</span>
+            <div class="ms-name">BAIXO</div>
+            <div class="ms-desc">Linhas de baixo e pulsação groove</div>
+          </div>
+          <div class="ms">
+            <span class="ms-num" style="color:var(--cyan);">03</span>
+            <div class="ms-name">HARMONIA</div>
+            <div class="ms-desc">Progressões de acordes e ambiência harmônica</div>
+          </div>
+          <div class="ms">
+            <span class="ms-num" style="color:var(--amber);">04</span>
+            <div class="ms-name">MELODIA</div>
+            <div class="ms-desc">Criação de temas marcantes e arranjo de vozes</div>
+          </div>
+          <div class="ms">
+            <span class="ms-num" style="color:var(--green);">05</span>
+            <div class="ms-name">EFEITOS</div>
+            <div class="ms-desc">Transições, reverb, delay e mixagem criativa</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+</section>
+
+<!-- EMENTA FORMAL -->
+<section id="ementa" style="background:var(--bg3); padding: 1.5rem 2rem 2rem;">
+  <div class="container">
+    <div class="ementa-accordion">
+      <button class="accordion-trigger" id="ementa-trigger">
+        <h2>Ementa Formal e Informações Técnicas</h2>
+        <span class="accordion-trigger-icon" id="ementa-chevron">▼</span>
+      </button>
+      <div class="accordion-content" id="ementa-content">
+        <div class="accordion-inner">
+          <p style="color:var(--muted); font-size:.95rem; margin-bottom:1.5rem; max-width:640px;">
+            Informações técnicas estruturadas para fins de certificação, validação escolar e registro pedagógico.
+          </p>
+
+          <div class="ementa-grid">
+            <div class="ementa-card">
+              <h4>📋 Dados Gerais</h4>
+              <ul class="ementa-list">
+                <li>Nome: Lab de Produção de Mídia</li>
+                <li>Modalidade: Curso Livre Presencial — Atividade Extracurricular</li>
+                <li>Carga horária total: 50 horas</li>
+                <li>Duração: 6 meses (24 encontros semanais de 2h + atividades práticas)</li>
+                <li>Público-alvo: Alunos do Ensino Fundamental II e Ensino Médio</li>
+                <li>Turmas: 8 a 15 alunos</li>
+                <li>Pré-requisito: Nenhum</li>
+              </ul>
+            </div>
+
+            <div class="ementa-card">
+              <h4>🎯 Objetivos do Curso</h4>
+              <ul class="ementa-list">
+                <li>Desenvolver percepção audiovisual e fundamentos aplicados</li>
+                <li>Ensinar produção musical e de vídeo com ferramentas profissionais (DAW, Premiere/DaVinci)</li>
+                <li>Contextualizar a mídia dentro das ciências e história (física, sociedade, audiovisual)</li>
+                <li>Promover competências de empreendedorismo e marketing digital</li>
+                <li>Estimular o trabalho colaborativo em um ambiente de produtora criativa</li>
+                <li>Produzir e lançar uma música e um clipe reais nas plataformas digitais</li>
+              </ul>
+            </div>
+
+            <div class="ementa-card">
+              <h4>📚 Áreas do Conhecimento Integradas</h4>
+              <ul class="ementa-list">
+                <li>Ciências da Natureza: Física acústica, ondas sonoras, luz, cores, percepção auditiva e visual</li>
+                <li>Ciências Humanas: História da música e do videoclipe, estética visual, contexto sociocultural</li>
+                <li>Linguagens e Artes: Teoria musical, roteiro, direção de arte, composição, performance</li>
+                <li>Tecnologia: DAW, MIDI, gravação digital, edição de vídeo não-linear, color grading</li>
+                <li>Empreendedorismo: Direitos autorais, lançamento digital, distribuição, gestão de projeto</li>
+              </ul>
+            </div>
+
+            <div class="ementa-card">
+              <h4>✅ Critérios de Conclusão</h4>
+              <ul class="ementa-list">
+                <li>Frequência mínima: 75% das aulas (18 de 24 encontros)</li>
+                <li>Participação ativa no projeto coletivo de produção musical e audiovisual</li>
+                <li>Entrega das funções assumidas no set de filmagem ou estúdio</li>
+                <li>Participação na apresentação de encerramento e exibição do clipe</li>
+                <li>Certificado emitido por: Umimbae (CNPJ 52.638.235/0001-07) + Escola parceira</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="legal-box">
+            <h4>⚖️ Base Legal</h4>
+            <p>
+              Curso livre conforme <strong>Lei nº 9.394/96 (LDB), Art. 40</strong>, e <strong>Decreto nº 5.154/2004</strong>.
+              Não requer autorização do MEC. Certificado válido em todo o território nacional para fins de
+              comprovação de qualificação profissional, horas complementares em instituições de ensino superior
+              e enriquecimento curricular.
+              <br/><br/>
+              <strong>Entidade emissora:</strong> Umimbae — CNPJ 52.638.235/0001-07
+              <br/>
+              <strong>Responsável técnico:</strong> Marcos Paulo Figueroa de Araujo
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>
+    © 2026 <strong>Umimbae</strong> — CNPJ 52.638.235/0001-07 &nbsp;|&nbsp;
+    Conteúdo Programático — Lab de Produção de Mídia &nbsp;|&nbsp;
+    <a href="index.html" style="color:var(--purple); text-decoration:none; font-weight: 600;">Voltar ao Pitch</a>
+  </p>
+</footer>
+
+<script>
+  // Active nav tracking
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+
+  function updateNavHighlight() {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 150) current = s.getAttribute('id');
+    });
+
+    navLinks.forEach(link => {
+      link.style.color = ''; // Reset
+
+      if (current === 'calendario' && link.classList.contains('month-nav-link')) {
+        const activeMonthTab = document.querySelector('.month-tab-btn.active');
+        if (activeMonthTab) {
+          const activeMonth = activeMonthTab.getAttribute('data-month');
+          if (link.getAttribute('data-month') === activeMonth) {
+            link.style.color = 'var(--purple)';
+          }
+        }
+      } else if (link.getAttribute('href') === `#${current}`) {
+        link.style.color = 'var(--purple)';
+      }
+    });
+  }
+
+  window.addEventListener('scroll', updateNavHighlight);
+
+  // Accordion for Ementa Formal
+  const accordionTrigger = document.getElementById('ementa-trigger');
+  const accordionContent = document.getElementById('ementa-content');
+  const triggerChevron = document.getElementById('ementa-chevron');
+
+  accordionTrigger.addEventListener('click', () => {
+    const isOpen = accordionContent.classList.toggle('open');
+    if (isOpen) {
+      accordionContent.style.maxHeight = accordionContent.scrollHeight + "px";
+      triggerChevron.style.transform = "rotate(180deg)";
+    } else {
+      accordionContent.style.maxHeight = "0px";
+      triggerChevron.style.transform = "rotate(0deg)";
+    }
+  });
+
+  // Calendar Logic
+  const monthTabs = document.querySelectorAll('.month-tab-btn');
+  const monthPanes = document.querySelectorAll('.month-pane');
+  const weekCards = document.querySelectorAll('.week-card');
+  const detailCards = document.querySelectorAll('.detail-card');
+  const detailPanel = document.getElementById('detail-panel');
+  const drawerOverlay = document.getElementById('drawer-overlay');
+  const drawerCloseHandle = document.getElementById('drawer-close-handle');
+
+  // Month navigation
+  monthTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const month = tab.getAttribute('data-month');
+      
+      monthTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      monthPanes.forEach(pane => pane.classList.remove('active'));
+      const activePane = document.getElementById(`month-pane-${month}`);
+      activePane.classList.add('active');
+
+      // Automatically select the first week of this month
+      const firstWeekOfPane = activePane.querySelector('.week-card');
+      if (firstWeekOfPane) {
+        firstWeekOfPane.click();
+      }
+
+      // Update navigation links highlighting
+      updateNavHighlight();
+    });
+  });
+
+  // Navigation menu click integration
+  const monthNavLinks = document.querySelectorAll('.month-nav-link');
+  monthNavLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const month = link.getAttribute('data-month');
+      const targetTab = document.querySelector(`.month-tab-btn[data-month="${month}"]`);
+      if (targetTab) {
+        targetTab.click();
+        const targetElement = document.getElementById('calendario');
+        if (targetElement) {
+          const yOffset = -100; // Offset for fixed navbar
+          const y = targetElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+      }
+    });
+  });
+
+  // Week card selection
+  weekCards.forEach(card => {
+    card.addEventListener('click', () => {
+      const week = card.getAttribute('data-week');
+      
+      weekCards.forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+
+      detailCards.forEach(d => d.classList.remove('active'));
+      const activeDetail = document.getElementById(`detail-week-${week}`);
+      activeDetail.classList.add('active');
+
+      // On mobile/tablet (viewport width <= 1024px), open the bottom sheet drawer
+      if (window.innerWidth <= 1024) {
+        detailPanel.classList.add('open');
+        drawerOverlay.classList.add('open');
+        document.body.style.overflow = 'hidden'; // prevent page scroll
+      }
+    });
+  });
+
+  // Close Mobile Drawer
+  function closeMobileDrawer() {
+    detailPanel.classList.remove('open');
+    drawerOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  drawerOverlay.addEventListener('click', closeMobileDrawer);
+  drawerCloseHandle.addEventListener('click', closeMobileDrawer);
+
+  // Swipe-down-to-close gesture support for mobile drawer
+  let touchStart = 0;
+  drawerCloseHandle.addEventListener('touchstart', e => {
+    touchStart = e.touches[0].clientY;
+  });
+  drawerCloseHandle.addEventListener('touchmove', e => {
+    let touchMove = e.touches[0].clientY;
+    if (touchMove - touchStart > 50) {
+      closeMobileDrawer();
+    }
+  });
+
+  // Axis Filter
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const filter = btn.getAttribute('data-filter');
+
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      weekCards.forEach(card => {
+        const tags = card.getAttribute('data-tags');
+        if (filter === 'all' || (tags && tags.includes(filter))) {
+          card.classList.remove('dimmed');
+        } else {
+          card.classList.add('dimmed');
+        }
+      });
+    });
+  });
+
+  // Interactive Checklist and local storage persistence
+  const checklistItems = document.querySelectorAll('.detail-checklist li');
+  
+  checklistItems.forEach((li, index) => {
+    const checkbox = li.querySelector('input[type="checkbox"]');
+    const storageKey = `umimbae_checklist_item_${index}`;
+
+    // Restore from local storage
+    if (localStorage.getItem(storageKey) === 'true') {
+      checkbox.checked = true;
+      li.classList.add('checked');
+    }
+
+    // Toggle behavior on list item click
+    li.addEventListener('click', (e) => {
+      // Avoid infinite loop if clicking checkbox directly
+      if (e.target !== checkbox) {
+        checkbox.checked = !checkbox.checked;
+      }
+      
+      const isChecked = checkbox.checked;
+      li.classList.toggle('checked', isChecked);
+      localStorage.setItem(storageKey, isChecked);
+    });
+  });
+
+  // Trigger click on first tab to initialize active states
+  document.querySelector('.month-tab-btn.active').click();
+</script>
+
+</body>
+</html>

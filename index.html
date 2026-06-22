@@ -1,0 +1,2687 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab Umimbae — Proposta de Projeto Piloto Musical</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --purple: #EAB308;
+      /* Brand Yellow (Parque Maravilha) */
+      --purple-l: #FEF08A;
+      /* Light Yellow */
+      --purple-d: #854D0E;
+      /* Dark Yellow */
+      --pink: #F97316;
+      /* Brand Orange (Umimbae) */
+      --pink-l: #FFEDD5;
+      /* Light Orange */
+      --cyan: #06B6D4;
+      --cyan-l: #67E8F9;
+      --amber: #F59E0B;
+      --amber-l: #FDE68A;
+      --green: #10B981;
+      --green-l: #6EE7B7;
+      --bg: #0A0A14;
+      --bg2: #10101E;
+      --bg3: #16162A;
+      --card: rgba(255, 255, 255, 0.04);
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #F1F0FF;
+      --muted: #9CA3AF;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    /* ─── NOISE TEXTURE ─── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.4;
+    }
+
+    /* ─── SLIDE ENGINE ─── */
+    #slides-wrapper {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 6rem 2rem 6rem;
+      overflow-y: auto;
+      overflow-x: hidden;
+      /* hidden by default — JS will set active */
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(60px);
+      transition: opacity .5s cubic-bezier(.4, 0, .2, 1), transform .5s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0);
+    }
+
+    .slide.exit-left {
+      opacity: 0;
+      transform: translateX(-60px);
+    }
+
+    /* slide backgrounds */
+    .slide-bg-dark {
+      background: var(--bg);
+    }
+
+    .slide-bg-dark2 {
+      background: var(--bg2);
+    }
+
+    .slide-bg-dark3 {
+      background: var(--bg3);
+    }
+
+    .container {
+      max-width: 1060px;
+      width: 100%;
+      margin: auto;
+    }
+
+    /* ─── TOP PROGRESS BAR + DOTS ─── */
+    #progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      z-index: 200;
+      background: rgba(255, 255, 255, .06);
+    }
+
+    #progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--purple), var(--pink), var(--amber));
+      transition: width .5s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    #slide-logo {
+      position: fixed;
+      top: 16px;
+      left: 24px;
+      z-index: 200;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      background: linear-gradient(135deg, var(--purple-l), var(--pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      pointer-events: none;
+    }
+
+    #slide-counter {
+      position: fixed;
+      top: 12px;
+      right: 24px;
+      z-index: 200;
+      font-size: .78rem;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: .08em;
+    }
+
+    /* ─── FLOATING MENU (top center) ─── */
+    #top-nav-menu {
+      position: fixed;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 200;
+      display: flex;
+      gap: 4px;
+      background: rgba(10, 10, 20, 0.65);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      padding: 4px;
+      border-radius: 100px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .menu-item {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: .75rem;
+      font-weight: 500;
+      padding: .4rem .8rem;
+      border-radius: 100px;
+      cursor: pointer;
+      transition: color .2s, background .2s, transform .2s;
+    }
+
+    .menu-item:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .menu-item.active {
+      color: #fff;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      font-weight: 600;
+      box-shadow: 0 2px 10px rgba(234, 179, 8, .3);
+    }
+
+    @media (max-width: 1024px) {
+      #top-nav-menu {
+        display: none;
+      }
+    }
+
+    /* ─── DOTS NAV (bottom center) ─── */
+    #dots-nav {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 200;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .2);
+      cursor: pointer;
+      transition: background .3s, transform .3s, width .3s;
+    }
+
+    .dot.active {
+      width: 22px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--purple-l), var(--pink));
+      transform: none;
+    }
+
+    .dot:hover:not(.active) {
+      background: rgba(255, 255, 255, .45);
+    }
+
+    /* ─── SIDE NAV ARROWS ─── */
+    .side-nav {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 200;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: rgba(10, 10, 20, .7);
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 1.1rem;
+      transition: border-color .25s, color .25s, transform .25s, box-shadow .25s;
+      user-select: none;
+    }
+
+    .side-nav:hover {
+      border-color: var(--purple-l);
+      color: var(--purple-l);
+      box-shadow: 0 0 18px rgba(234, 179, 8, .3);
+      transform: translateY(-50%) scale(1.08);
+    }
+
+    .side-nav:active {
+      transform: translateY(-50%) scale(.96);
+    }
+
+    .side-nav.disabled {
+      opacity: .2;
+      pointer-events: none;
+    }
+
+    #nav-prev {
+      left: 18px;
+    }
+
+    #nav-next {
+      right: 18px;
+    }
+
+    @media (max-width: 768px) {
+      .side-nav {
+        display: none;
+      }
+    }
+
+    /* ─── ADVANCE BUTTON (bottom of each slide) ─── */
+    .slide-advance {
+      margin-top: 2.5rem;
+      display: flex;
+      gap: .8rem;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ─── SHARED TYPOGRAPHY & COMPONENTS ─── */
+    .gradient-text {
+      background: linear-gradient(135deg, var(--purple-l) 0%, var(--pink) 50%, var(--amber) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section-label {
+      display: inline-block;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--purple-l);
+      margin-bottom: .6rem;
+    }
+
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: .75rem;
+    }
+
+    .section-sub {
+      color: var(--muted);
+      font-size: .97rem;
+      line-height: 1.72;
+      max-width: 620px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .8rem 1.9rem;
+      border-radius: 100px;
+      font-size: .92rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform .2s, box-shadow .2s;
+      border: none;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      color: #0A0A14;
+      /* Dark text on bright yellow button for better readability */
+      box-shadow: 0 0 28px rgba(234, 179, 8, .38);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 0 48px rgba(234, 179, 8, .6);
+    }
+
+    .btn-ghost {
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, .08);
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, rgba(245, 158, 11, .09), rgba(249, 115, 22, .09));
+      border: 1px solid rgba(245, 158, 11, .2);
+      border-radius: 16px;
+      padding: 1.25rem 1.75rem;
+      margin-top: 1.5rem;
+    }
+
+    .highlight-box p {
+      font-size: .92rem;
+      line-height: 1.65;
+    }
+
+    .highlight-box strong {
+      color: var(--amber);
+    }
+
+    .quote {
+      border-left: 3px solid var(--purple);
+      padding: 1rem 1.5rem;
+      background: rgba(234, 179, 8, .06);
+      border-radius: 0 12px 12px 0;
+      margin-top: 1.5rem;
+      font-style: italic;
+      color: var(--muted);
+      font-size: .9rem;
+      line-height: 1.65;
+    }
+
+    /* ─── SLIDE 1: HERO ─── */
+    #slide-hero {
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(110px);
+      pointer-events: none;
+    }
+
+    .orb-purple {
+      width: 460px;
+      height: 460px;
+      background: radial-gradient(circle, rgba(234, 179, 8, .35) 0%, transparent 70%);
+      top: -120px;
+      left: -160px;
+    }
+
+    .orb-pink {
+      width: 360px;
+      height: 360px;
+      background: radial-gradient(circle, rgba(249, 115, 22, .28) 0%, transparent 70%);
+      top: 80px;
+      right: -120px;
+    }
+
+    .orb-cyan {
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(6, 182, 212, .3) 0%, transparent 70%);
+      bottom: 40px;
+      left: 35%;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: .75rem;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--purple-l);
+      border: 1px solid rgba(234, 179, 8, .4);
+      padding: .35rem .9rem;
+      border-radius: 100px;
+      background: rgba(234, 179, 8, .1);
+      margin-bottom: 1.3rem;
+      animation: fadeUp .8s ease both;
+    }
+
+    .hero-eyebrow::before {
+      content: '🎵';
+    }
+
+    h1.hero-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(2.4rem, 6vw, 4.8rem);
+      font-weight: 900;
+      line-height: 1.06;
+      letter-spacing: -0.03em;
+      animation: fadeUp .8s .15s ease both;
+    }
+
+    .hero-sub {
+      font-size: clamp(.95rem, 1.8vw, 1.18rem);
+      color: var(--muted);
+      max-width: 660px;
+      margin: 1.3rem auto 2rem;
+      line-height: 1.72;
+      animation: fadeUp .8s .3s ease both;
+    }
+
+    .hero-cta {
+      display: inline-flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp .8s .45s ease both;
+    }
+
+    .hero-stats {
+      margin-top: 3rem;
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: fadeUp .8s .6s ease both;
+    }
+
+    .stat {
+      text-align: center;
+      padding: 1rem 1.75rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      backdrop-filter: blur(10px);
+    }
+
+    .stat-num {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--purple-l), var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label {
+      font-size: .75rem;
+      color: var(--muted);
+      margin-top: .15rem;
+    }
+
+    /* ─── SLIDE 2: PROBLEMA ─── */
+    .problem-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-top: 1.75rem;
+    }
+
+    .problem-card {
+      padding: 1.5rem;
+      border-radius: 18px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      transition: border-color .3s, transform .3s;
+    }
+
+    .problem-card:hover {
+      border-color: rgba(234, 179, 8, .4);
+      transform: translateY(-4px);
+    }
+
+    .problem-icon {
+      font-size: 1.7rem;
+      margin-bottom: .75rem;
+      display: block;
+    }
+
+    .problem-card h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: .45rem;
+    }
+
+    .problem-card p {
+      color: var(--muted);
+      font-size: .87rem;
+      line-height: 1.6;
+    }
+
+    /* ─── SLIDE 3: SOLUÇÃO ─── */
+    .solution-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+      align-items: start;
+      margin-top: 1.5rem;
+    }
+
+    .solution-visual {
+      background: linear-gradient(135deg, rgba(234, 179, 8, .14), rgba(249, 115, 22, .14));
+      border: 1px solid rgba(234, 179, 8, .2);
+      border-radius: 22px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .solution-visual::after {
+      content: '🎹';
+      position: absolute;
+      bottom: -14px;
+      right: -10px;
+      font-size: 7rem;
+      opacity: .07;
+      pointer-events: none;
+    }
+
+    .pill-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: .6rem;
+    }
+
+    .pill-list li {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      font-size: .88rem;
+      font-weight: 500;
+    }
+
+    .pill-list li::before {
+      content: '✓';
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.3rem;
+      height: 1.3rem;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      font-size: .65rem;
+      font-weight: 800;
+      color: #0A0A14;
+      flex-shrink: 0;
+    }
+
+    .solution-points {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .sp {
+      display: flex;
+      gap: .85rem;
+      align-items: flex-start;
+    }
+
+    .sp-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .sp-icon.purple {
+      background: rgba(234, 179, 8, .2);
+    }
+
+    .sp-icon.pink {
+      background: rgba(249, 115, 22, .2);
+    }
+
+    .sp-icon.cyan {
+      background: rgba(6, 182, 212, .2);
+    }
+
+    .sp-icon.amber {
+      background: rgba(245, 158, 11, .2);
+    }
+
+    .sp-text h4 {
+      font-weight: 700;
+      font-size: .93rem;
+      margin-bottom: .2rem;
+    }
+
+    .sp-text p {
+      color: var(--muted);
+      font-size: .85rem;
+      line-height: 1.55;
+    }
+
+    /* ─── SCOPE CHART (Slide 3) ─── */
+    .scope-chart-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2.5rem;
+      margin-top: 2rem;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.5rem 2rem;
+    }
+
+    .pie-chart {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      background: conic-gradient(var(--cyan) 0% 42%, var(--purple) 42% 75%, var(--pink) 75% 92%, var(--green) 92% 100%);
+      position: relative;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+      flex-shrink: 0;
+    }
+
+    .pie-chart::after {
+      content: '48 Horas';
+      position: absolute;
+      inset: 25px;
+      background: var(--bg2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .chart-legend {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      flex: 1;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+    }
+
+    .legend-color {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      margin-top: 4px;
+      flex-shrink: 0;
+    }
+
+    .legend-color.tech {
+      background: var(--cyan);
+    }
+
+    .legend-color.creation {
+      background: var(--purple);
+    }
+
+    .legend-color.business {
+      background: var(--pink);
+    }
+
+    .legend-color.history {
+      background: var(--green);
+    }
+
+    /* ─── SLIDE 4: METODOLOGIA ─── */
+    .disciplines {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+    }
+
+    .disc-card {
+      border-radius: 18px;
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      background: var(--card);
+      transition: transform .3s, box-shadow .3s;
+    }
+
+    .disc-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .disc-tag {
+      display: inline-block;
+      font-size: .67rem;
+      font-weight: 700;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+      padding: .25rem .65rem;
+      border-radius: 100px;
+      margin-bottom: .75rem;
+    }
+
+    .tag-science {
+      background: rgba(6, 182, 212, .15);
+      color: var(--cyan);
+    }
+
+    .tag-history {
+      background: rgba(245, 158, 11, .15);
+      color: var(--amber);
+    }
+
+    .tag-music {
+      background: rgba(234, 179, 8, .15);
+      color: var(--purple-l);
+    }
+
+    .tag-business {
+      background: rgba(16, 185, 129, .15);
+      color: var(--green);
+    }
+
+    .disc-icon {
+      font-size: 1.9rem;
+      margin-bottom: .5rem;
+      display: block;
+    }
+
+    .disc-card h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: .4rem;
+    }
+
+    .disc-card p {
+      color: var(--muted);
+      font-size: .83rem;
+      line-height: 1.55;
+    }
+
+    .disc-list {
+      list-style: none;
+      margin-top: .6rem;
+      display: flex;
+      flex-direction: column;
+      gap: .28rem;
+    }
+
+    .disc-list li {
+      font-size: .78rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: .35rem;
+    }
+
+    .disc-list li::before {
+      content: '›';
+      color: var(--purple-l);
+      font-weight: 700;
+    }
+
+    /* ─── SLIDE 5: CRONOGRAMA ─── */
+    .timeline {
+      position: relative;
+      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 50px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(180deg, var(--purple), var(--pink), var(--cyan), var(--amber), var(--green), var(--purple-l));
+    }
+
+    .tl-item {
+      display: flex;
+      gap: 1.25rem;
+      align-items: flex-start;
+      padding: 1rem 0;
+      position: relative;
+    }
+
+    .tl-month {
+      width: 100px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .25rem;
+    }
+
+    .tl-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.2rem;
+      z-index: 1;
+      border: 2px solid transparent;
+      position: relative;
+    }
+
+    .tl-circle.c1 {
+      background: rgba(234, 179, 8, .2);
+      color: var(--purple-l);
+      border-color: var(--purple);
+    }
+
+    .tl-circle.c2 {
+      background: rgba(249, 115, 22, .2);
+      color: var(--pink-l);
+      border-color: var(--pink);
+    }
+
+    .tl-circle.c3 {
+      background: rgba(6, 182, 212, .2);
+      color: var(--cyan-l);
+      border-color: var(--cyan);
+    }
+
+    .tl-circle.c4 {
+      background: rgba(245, 158, 11, .2);
+      color: var(--amber-l);
+      border-color: var(--amber);
+    }
+
+    .tl-circle.c5 {
+      background: rgba(16, 185, 129, .2);
+      color: var(--green-l);
+      border-color: var(--green);
+    }
+
+    .tl-circle.c6 {
+      background: linear-gradient(135deg, rgba(234, 179, 8, .3), rgba(249, 115, 22, .3));
+      color: #fff;
+      border-color: var(--purple-l);
+      box-shadow: 0 0 18px rgba(234, 179, 8, .5);
+    }
+
+    .tl-label {
+      font-size: .65rem;
+      font-weight: 600;
+      letter-spacing: .04em;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .tl-content {
+      flex: 1;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1rem 1.25rem;
+      transition: border-color .3s;
+    }
+
+    .tl-content:hover {
+      border-color: rgba(234, 179, 8, .3);
+    }
+
+    .tl-content h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: .97rem;
+      font-weight: 700;
+      margin-bottom: .3rem;
+    }
+
+    .tl-content p {
+      color: var(--muted);
+      font-size: .82rem;
+      line-height: 1.55;
+    }
+
+    .tl-tags {
+      display: flex;
+      gap: .4rem;
+      flex-wrap: wrap;
+      margin-top: .6rem;
+    }
+
+    .tl-tag {
+      font-size: .67rem;
+      font-weight: 600;
+      padding: .2rem .55rem;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    /* ─── SLIDE 6: UMIMBAE ─── */
+    .umimbae-logo-text {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      font-weight: 900;
+      letter-spacing: -.04em;
+      background: linear-gradient(135deg, var(--purple-l), var(--pink), var(--amber));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: block;
+      margin-bottom: .4rem;
+    }
+
+    .flow-cards {
+      display: flex;
+      gap: .5rem;
+      margin-top: 1.75rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .flow-card {
+      flex: 1;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem 0.5rem;
+      text-align: center;
+      transition: transform .3s;
+      min-width: 0;
+    }
+
+    .flow-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .flow-arrow {
+      flex-shrink: 0;
+      width: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--purple-l);
+      font-size: 1.3rem;
+    }
+
+    .flow-card .flow-icon {
+      font-size: 1.7rem;
+      margin-bottom: .4rem;
+      display: block;
+    }
+
+    .flow-card h4 {
+      font-weight: 700;
+      font-size: .85rem;
+      margin-bottom: .2rem;
+    }
+
+    .flow-card p {
+      font-size: .75rem;
+      color: var(--muted);
+    }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .benefit-card {
+      padding: 1.25rem 1.5rem;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      display: flex;
+      gap: .85rem;
+      align-items: flex-start;
+    }
+
+    .benefit-card .bicon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .benefit-card h4 {
+      font-weight: 700;
+      font-size: .88rem;
+      margin-bottom: .2rem;
+    }
+
+    .benefit-card p {
+      font-size: .8rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* ─── SLIDE 7: INFRAESTRUTURA ─── */
+    .infra-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.75rem;
+      margin-top: 1.75rem;
+    }
+
+    .infra-card {
+      border-radius: 18px;
+      padding: 1.75rem;
+      border: 1px solid var(--border);
+    }
+
+    .infra-card.escola {
+      background: rgba(6, 182, 212, .06);
+      border-color: rgba(6, 182, 212, .2);
+    }
+
+    .infra-card.umimbae-card {
+      background: rgba(234, 179, 8, .06);
+      border-color: rgba(234, 179, 8, .2);
+    }
+
+    .infra-card h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: .85rem;
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+    }
+
+    .infra-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+    }
+
+    .infra-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: .55rem;
+      font-size: .85rem;
+      line-height: 1.5;
+    }
+
+    .infra-list li span.dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+
+    .escola .dot {
+      background: var(--cyan);
+    }
+
+    .umimbae-card .dot {
+      background: var(--purple-l);
+    }
+
+    /* ─── SLIDE 8: FINANCEIRO ─── */
+    .fin-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .84rem;
+    }
+
+    .fin-table th {
+      background: rgba(255, 255, 255, .05);
+      padding: .65rem .9rem;
+      text-align: left;
+      font-weight: 700;
+      font-size: .75rem;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .fin-table td {
+      padding: .75rem .9rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+      line-height: 1.4;
+    }
+
+    .fin-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .fin-table tr:hover td {
+      background: rgba(255, 255, 255, .02);
+    }
+
+    .fin-table .bad {
+      color: #F87171;
+      font-weight: 600;
+    }
+
+    .fin-table .warn {
+      color: var(--amber);
+      font-weight: 600;
+    }
+
+    .fin-table .good {
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    .fin-table .highlight-row td {
+      background: rgba(234, 179, 8, .08);
+      border-top: 1px solid rgba(234, 179, 8, .3);
+      border-bottom: 1px solid rgba(234, 179, 8, .3);
+    }
+
+    .gain-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .gain-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.1rem 1.25rem;
+      display: flex;
+      gap: .75rem;
+      align-items: flex-start;
+      transition: transform .3s, border-color .3s;
+    }
+
+    .gain-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(124, 58, 237, .3);
+    }
+
+    .gain-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .gain-card h4 {
+      font-weight: 700;
+      font-size: .85rem;
+      margin-bottom: .2rem;
+    }
+
+    .gain-card p {
+      font-size: .78rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* price ruler */
+    .price-ruler {
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+    }
+
+    .pr-item {
+      display: flex;
+      align-items: center;
+      gap: .85rem;
+      padding: .7rem 1.1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      transition: transform .2s;
+    }
+
+    .pr-item:hover {
+      transform: translateX(4px);
+    }
+
+    .pr-val {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: .97rem;
+      min-width: 78px;
+      flex-shrink: 0;
+    }
+
+    .pr-label {
+      font-size: .82rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .pr-bad {
+      background: rgba(248, 113, 113, .06);
+      border-color: rgba(248, 113, 113, .2);
+    }
+
+    .pr-bad .pr-val {
+      color: #F87171;
+    }
+
+    .pr-ok {
+      background: rgba(245, 158, 11, .06);
+      border-color: rgba(245, 158, 11, .2);
+    }
+
+    .pr-ok .pr-val {
+      color: var(--amber);
+    }
+
+    .pr-good {
+      background: rgba(16, 185, 129, .06);
+      border-color: rgba(16, 185, 129, .2);
+    }
+
+    .pr-good .pr-val {
+      color: var(--green);
+    }
+
+    .pr-highlight {
+      border-color: var(--green) !important;
+      background: rgba(16, 185, 129, .1) !important;
+      box-shadow: 0 0 18px rgba(16, 185, 129, .15);
+    }
+
+    .pr-highlight .pr-label {
+      color: var(--text);
+      font-weight: 600;
+      font-style: normal;
+    }
+
+    /* pilot box */
+    .pilot-box {
+      background: linear-gradient(135deg, rgba(234, 179, 8, .1), rgba(6, 182, 212, .08));
+      border: 1px solid rgba(234, 179, 8, .25);
+      border-radius: 22px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pilot-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--purple), var(--cyan));
+    }
+
+    .pilot-badge {
+      display: inline-block;
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      border: 1px solid rgba(6, 182, 212, .3);
+      background: rgba(6, 182, 212, .1);
+      padding: .28rem .8rem;
+      border-radius: 100px;
+      margin-bottom: .85rem;
+    }
+
+    .pilot-box h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: .4rem;
+    }
+
+    .pilot-box>p {
+      color: var(--muted);
+      font-size: .9rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .pilot-points {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .75rem;
+    }
+
+    .pilot-point {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      background: rgba(255, 255, 255, .03);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: .9rem 1.1rem;
+    }
+
+    .pilot-num {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 900;
+      line-height: 1;
+      background: linear-gradient(135deg, var(--purple-l), var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      flex-shrink: 0;
+      margin-top: .1rem;
+    }
+
+    .pilot-point strong {
+      display: block;
+      font-size: .87rem;
+      margin-bottom: .2rem;
+    }
+
+    .pilot-point p {
+      color: var(--muted);
+      font-size: .8rem;
+      line-height: 1.5;
+    }
+
+    /* ─── SLIDE 9: FACILITADOR + FAQ ─── */
+    .facilitator-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    .facilitator-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.75rem;
+      margin-top: 1.5rem;
+    }
+
+    .fac-header {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.25rem;
+    }
+
+    .fac-avatar {
+      width: 78px;
+      height: 78px;
+      border-radius: 50%;
+      border: 3px solid rgba(234, 179, 8, .3);
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow: 0 0 16px rgba(234, 179, 8, .2);
+    }
+
+    .fac-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .fac-title h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: .15rem;
+    }
+
+    .fac-role {
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--cyan);
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .facilitator-box p {
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: .88rem;
+      margin-bottom: .75rem;
+    }
+
+    .facilitator-box p:last-child {
+      margin-bottom: 0;
+    }
+
+    .faq-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.1rem;
+      margin-top: 1.5rem;
+    }
+
+    .faq-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem;
+      transition: transform .3s, border-color .3s;
+    }
+
+    .faq-item:hover {
+      transform: translateY(-3px);
+      border-color: rgba(234, 179, 8, .3);
+    }
+
+    .faq-item h4 {
+      font-family: 'Outfit', sans-serif;
+      font-size: .97rem;
+      font-weight: 700;
+      margin-bottom: .55rem;
+      display: flex;
+      align-items: flex-start;
+      gap: .45rem;
+      line-height: 1.3;
+    }
+
+    .faq-item h4::before {
+      content: '?';
+      color: var(--pink);
+      font-weight: 900;
+    }
+
+    .faq-item p {
+      color: var(--muted);
+      font-size: .83rem;
+      line-height: 1.58;
+    }
+
+    /* ─── SLIDE 10: CTA ─── */
+    .cta-box {
+      background: linear-gradient(135deg, rgba(234, 179, 8, .15), rgba(249, 115, 22, .1));
+      border: 1px solid rgba(234, 179, 8, .3);
+      border-radius: 28px;
+      padding: 3.5rem 2.5rem;
+      max-width: 720px;
+      margin: 0 auto;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .cta-box::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 28px;
+      background: radial-gradient(ellipse at 50% 0%, rgba(234, 179, 8, .2) 0%, transparent 60%);
+    }
+
+    .cta-box h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(1.6rem, 3.5vw, 2.5rem);
+      font-weight: 900;
+      margin-bottom: .85rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-box p {
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.7;
+      margin-bottom: 1.75rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
+    }
+
+    .contact-info {
+      margin-top: 2rem;
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      font-size: .88rem;
+      color: var(--muted);
+    }
+
+    .contact-item span {
+      color: var(--purple-l);
+    }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(22px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ─── SCROLLBAR (inside slides) ─── */
+    .slide::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .slide::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .slide::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, .12);
+      border-radius: 2px;
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      .slide {
+        padding: 5rem 1.25rem 5rem;
+      }
+
+      #slide-logo {
+        left: 1.25rem;
+        top: 1.25rem;
+        font-size: 1rem;
+      }
+
+      #slide-counter {
+        right: 1.25rem;
+        top: 1.15rem;
+        font-size: 0.72rem;
+      }
+
+      .problem-grid,
+      .solution-wrapper,
+      .disciplines,
+      .infra-grid,
+      .benefits-grid,
+      .faq-grid,
+      .gain-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pilot-box {
+        padding: 1.25rem;
+      }
+
+      .pilot-points {
+        grid-template-columns: 1fr;
+      }
+
+      .pilot-point {
+        padding: 0.75rem 1rem;
+      }
+
+      .infra-card {
+        padding: 1.25rem;
+      }
+
+      .scope-chart-container {
+        flex-direction: column;
+        gap: 1.5rem;
+        padding: 1.25rem;
+      }
+
+      .gain-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .flow-cards {
+        flex-direction: column;
+        gap: 0.85rem;
+      }
+
+      .flow-arrow {
+        transform: rotate(90deg);
+        height: 24px;
+      }
+
+      .facilitator-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .facilitator-box {
+        padding: 1.25rem;
+      }
+
+      .faq-item {
+        padding: 1rem;
+      }
+
+      .hero-stats {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.75rem !important;
+        width: 100%;
+        margin-top: 2rem !important;
+      }
+
+      .stat {
+        padding: 0.75rem 0.5rem !important;
+      }
+
+      .stat-num {
+        font-size: 1.5rem !important;
+      }
+
+      .stat-label {
+        font-size: 0.7rem !important;
+      }
+
+      .timeline::before {
+        left: 20px;
+      }
+
+      .tl-item {
+        gap: 0.75rem;
+      }
+
+      .tl-month {
+        width: 40px;
+      }
+
+      .tl-circle {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+      }
+
+      .tl-label {
+        font-size: 0.55rem;
+      }
+
+      .tl-content {
+        padding: 0.85rem 1rem;
+      }
+
+      .tl-content h3 {
+        font-size: 0.88rem;
+      }
+
+      .tl-content p {
+        font-size: 0.78rem;
+      }
+
+      .cta-box {
+        padding: 2rem 1.5rem;
+      }
+
+      .cta-buttons {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .cta-buttons .btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .contact-info {
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- PROGRESS BAR -->
+  <div id="progress-bar">
+    <div id="progress-fill"></div>
+  </div>
+
+  <!-- LOGO -->
+  <div id="slide-logo">🎵 Lab de Produção</div>
+
+  <!-- COUNTER -->
+  <div id="slide-counter">1 / 10</div>
+
+  <!-- FLOATING MENU (Desktop) -->
+  <nav id="top-nav-menu" aria-label="Menu principal">
+    <button class="menu-item active" data-slide-index="0" onclick="goToSlide(0)">Início</button>
+    <button class="menu-item" data-slide-index="1" onclick="goToSlide(1)">Contexto</button>
+    <button class="menu-item" data-slide-index="2" onclick="goToSlide(2)">Solução</button>
+    <button class="menu-item" data-slide-index="3" onclick="goToSlide(3)">Pilares</button>
+    <button class="menu-item" data-slide-index="4" onclick="goToSlide(4)">Cronograma</button>
+    <button class="menu-item" data-slide-index="5" onclick="goToSlide(5)">Plataforma</button>
+    <button class="menu-item" data-slide-index="6" onclick="goToSlide(6)">Começar</button>
+    <button class="menu-item" data-slide-index="7" onclick="goToSlide(7)">Comercial</button>
+    <button class="menu-item" data-slide-index="8" onclick="goToSlide(8)">Professor</button>
+    <button class="menu-item" data-slide-index="9" onclick="goToSlide(9)">Contato</button>
+  </nav>
+
+  <!-- SIDE NAV -->
+  <button class="side-nav disabled" id="nav-prev" aria-label="Slide anterior">&#8249;</button>
+  <button class="side-nav" id="nav-next" aria-label="Próximo slide">&#8250;</button>
+
+  <!-- DOTS NAV -->
+  <nav id="dots-nav" aria-label="Navegação de slides"></nav>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!--  SLIDES                                        -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div id="slides-wrapper">
+
+    <!-- SLIDE 1: HERO -->
+    <section class="slide slide-bg-dark active" id="slide-1" data-slide="0">
+      <div class="hero-orb orb-purple"></div>
+      <div class="hero-orb orb-pink"></div>
+      <div class="hero-orb orb-cyan"></div>
+
+      <div class="container" style="text-align:center;">
+        <div class="hero-eyebrow">Proposta Exclusiva · Colégio Fernandes Menezes</div>
+
+        <h1 class="hero-title">
+          Lab de Produção
+          <br /><span class="gradient-text">de Mídia do Fernandes Menezes</span>
+        </h1>
+
+        <p class="hero-sub">
+          Uma oficina extracurricular de 6 meses onde os alunos não apenas aprendem música —
+          eles <strong>compem, gravam, filmam e lançam</strong> uma música no Spotify e um clipe no YouTube,
+          integrando Ciências, História, Tecnologia, Audiovisual e Negócios.
+        </p>
+
+        <div class="hero-stats">
+          <div class="stat">
+            <div class="stat-num">6</div>
+            <div class="stat-label">Meses de Duração</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">5</div>
+            <div class="stat-label">Áreas do Conhecimento</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">2h</div>
+            <div class="stat-label">Por Aula</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">2</div>
+            <div class="stat-label">Entregáveis: Música + Clipe</div>
+          </div>
+        </div>
+
+        <div class="slide-advance">
+          <button class="btn btn-primary" onclick="goToSlide(1)">Conhecer a Proposta →</button>
+          <button class="btn btn-ghost" onclick="goToSlide(4)">Ver Cronograma</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: PROBLEMA -->
+    <section class="slide slide-bg-dark2" id="slide-2" data-slide="1">
+      <div class="container">
+        <span class="section-label">O Contexto</span>
+        <h2 class="section-title">Por que o ensino de <span class="gradient-text">música precisa inovar?</span></h2>
+        <p class="section-sub">
+          A geração atual consome e produz conteúdo de formas radicalmente novas. O ensino musical tradicional,
+          focado exclusivamente em teoria e execução isolada, não conversa com essa realidade.
+        </p>
+
+        <div class="problem-grid">
+          <div class="problem-card">
+            <span class="problem-icon">📱</span>
+            <h3>Alunos são criadores nativos</h3>
+            <p>A geração Z e Alpha cresce no TikTok, Spotify e YouTube. Eles já são criadores de conteúdo —
+              falta apenas a estrutura e o conhecimento técnico para transformar isso em arte de qualidade.</p>
+          </div>
+          <div class="problem-card">
+            <span class="problem-icon">😴</span>
+            <h3>Atividades extracurriculares tradicionais não engajam</h3>
+            <p>Escalas, solfejo e repertório clássico sozinhos não capturam a atenção de adolescentes de hoje.
+              É preciso conectar o aprendizado à realidade e às ambições deles.</p>
+          </div>
+          <div class="problem-card">
+            <span class="problem-icon">🎭</span>
+            <h3>O adolescente do Fernandes Menezes já cria</h3>
+            <p>O colégio já oferece musicalização, ballet e teatro — mas essas atividades atendem principalmente
+              as séries iniciais. <strong>O Fundamental II e o Ensino Médio ainda não têm uma atividade criativa e
+                tecnológica à altura de quem eles já são.</strong></p>
+          </div>
+          <div class="problem-card">
+            <span class="problem-icon">🏁</span>
+            <h3>Falta um produto final que os alunos se orgulhem</h3>
+            <p>Cursos criativos costumam terminar em uma apresentação interna. Uma música no Spotify e um clipe no
+              YouTube, com o nome do aluno nos créditos, é um portfólio real — algo concreto, duradouro e que ele
+              carrega para o resto da vida.</p>
+          </div>
+        </div>
+
+        <div class="highlight-box">
+          <p>
+            <strong>A conexão perfeita:</strong> O Programa <strong>Líder em Mim</strong> do Colégio Fernandes Menezes
+            ensina autoconhecimento, protagonismo e trabalho em equipe. O Lab entrega exatamente isso na prática:
+            uma turma que se organiza como uma produtora real, entregando uma música no Spotify <em>e</em> um clipe no
+            YouTube ao final dos 6 meses.
+            <strong>Os dois projetos se fortalecem mutuamente.</strong>
+          </p>
+        </div>
+
+        <div class="slide-advance">
+          <button class="btn btn-primary" onclick="goToSlide(2)">A Nossa Solução →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: SOLUÇÃO -->
+    <section class="slide slide-bg-dark" id="slide-3" data-slide="2">
+      <div class="container">
+        <span class="section-label">A Solução</span>
+        <h2 class="section-title">Uma oficina onde a <span class="gradient-text">jornada é o produto</span></h2>
+
+        <div class="solution-wrapper">
+          <div class="solution-visual">
+            <h3 style="font-family:'Outfit',sans-serif; font-size:1.1rem; font-weight:700; margin-bottom:1.25rem;">
+              O que os alunos vão vivenciar:
+            </h3>
+            <ul class="pill-list">
+              <li>Aprender teoria musical de forma aplicada</li>
+              <li>Entender a física do som e da imagem</li>
+              <li>Estudar a história da música e do videoclipe</li>
+              <li>Compor e escrever a letra de uma música própria</li>
+              <li>Usar DAW profissional (Ableton / GarageBand)</li>
+              <li>Gravar instrumentos e vocais com técnica</li>
+              <li>Roteirizar e filmar um clipe musical</li>
+              <li>Editar vídeo com color grading (Premiere / DaVinci)</li>
+              <li>Lançar a música no Spotify via Umimbae</li>
+              <li>Publicar o clipe no YouTube com estratégia de lançamento</li>
+              <li>Realizar um show de encerramento com exibição do clipe</li>
+            </ul>
+          </div>
+
+          <div class="solution-points">
+            <div class="sp">
+              <div class="sp-icon purple">🎯</div>
+              <div class="sp-text">
+                <h4>Objetivo Central</h4>
+                <p>Ao fim de 6 meses, cada turma terá produzido <strong>1 música lançada no Spotify</strong> e <strong>1
+                    clipe oficial no YouTube</strong> — com créditos reais, identidade visual própria e estratégia de
+                  lançamento.</p>
+              </div>
+            </div>
+            <div class="sp">
+              <div class="sp-icon pink">👥</div>
+              <div class="sp-text">
+                <h4>Formato das Aulas</h4>
+                <p>Turmas reduzidas (8–15 alunos), com aulas semanais de <strong>2h</strong> no contraturno. Cada aula
+                  alterna
+                  entre teoria, prática (DAW ou câmera) e construção do projeto coletivo.</p>
+              </div>
+            </div>
+            <div class="sp">
+              <div class="sp-icon cyan">🎓</div>
+              <div class="sp-text">
+                <h4>Público-Alvo Sugerido</h4>
+                <p>Alunos do Ensino Fundamental II (6º ao 9º ano) e Ensino Médio — faixa etária com maior
+                  engajamento com cultura musical contemporânea e redes sociais.</p>
+              </div>
+            </div>
+            <div class="sp">
+              <div class="sp-icon amber">⚡</div>
+              <div class="sp-text">
+                <h4>Diferenciais Únicos</h4>
+                <p>Integração com STEAM, dois produtos reais publicados (música + clipe), mentoria em produção
+                  audiovisual e negócios, e a Umimbae como distribuidora e realizadora.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- GRÁFICO DE PIZZA DO ESCOPO -->
+        <div class="scope-chart-container">
+          <div class="pie-chart"></div>
+          <div class="chart-legend">
+            <h4
+              style="font-family: 'Outfit', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--text); margin-bottom: 0.2rem;">
+              Divisão por Pilar de Conhecimento</h4>
+            <div class="legend-item">
+              <span class="legend-color tech"></span>
+              <div style="font-size: 0.82rem; line-height: 1.4;">
+                <strong style="color: var(--text);">42% Física &amp; Tecnologia</strong> <span
+                  style="color: var(--muted);">(20 horas)</span>
+                <div style="font-size: 0.75rem; color: var(--muted);">Uso prático de DAWs, acústica física, gravação
+                  profissional, mixagem e edição.</div>
+              </div>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color creation"></span>
+              <div style="font-size: 0.82rem; line-height: 1.4;">
+                <strong style="color: var(--text);">33% Criação &amp; Composição</strong> <span
+                  style="color: var(--muted);">(16 horas)</span>
+                <div style="font-size: 0.75rem; color: var(--muted);">Teoria musical aplicada (ritmo/harmonia/melodia),
+                  escrita de letras e roteirização do clipe.</div>
+              </div>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color business"></span>
+              <div style="font-size: 0.82rem; line-height: 1.4;">
+                <strong style="color: var(--text);">17% Mercado &amp; Empreendedorismo</strong> <span
+                  style="color: var(--muted);">(8 horas)</span>
+                <div style="font-size: 0.75rem; color: var(--muted);">Branding do projeto, direitos autorais (ISRC),
+                  distribuição digital e show ao vivo.</div>
+              </div>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color history"></span>
+              <div style="font-size: 0.82rem; line-height: 1.4;">
+                <strong style="color: var(--text);">8% História &amp; Sociedade</strong> <span
+                  style="color: var(--muted);">(4 horas)</span>
+                <div style="font-size: 0.75rem; color: var(--muted);">Origem de gêneros musicais, análises estéticas
+                  comparativas e moodboard de referências.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-advance">
+          <button class="btn btn-primary" onclick="goToSlide(3)">Ver Metodologia →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: METODOLOGIA -->
+    <section class="slide slide-bg-dark3" id="slide-4" data-slide="3">
+      <div class="container">
+        <span class="section-label">Metodologia</span>
+        <h2 class="section-title">Quatro pilares do <span class="gradient-text">conhecimento integrado</span></h2>
+        <p class="section-sub">
+          Cada aula conecta música a outras disciplinas, tornando o aprendizado mais rico, contextualizado
+          e alinhado à BNCC e ao conceito de educação integral.
+        </p>
+
+        <div class="disciplines">
+          <div class="disc-card">
+            <span class="disc-tag tag-science">Ciência & Tecnologia</span>
+            <span class="disc-icon">🔬</span>
+            <h3>Física & Tecnologia do Som</h3>
+            <p>A música é ciência aplicada. Exploramos a física de ondas sonoras de forma prática e intuitiva.</p>
+            <ul class="disc-list">
+              <li>Frequência, amplitude e timbre</li>
+              <li>Propagação do som e acústica</li>
+              <li>Fisiologia da audição humana</li>
+              <li>Como microfones e alto-falantes funcionam</li>
+              <li>DAWs e edição de áudio digital</li>
+            </ul>
+          </div>
+          <div class="disc-card">
+            <span class="disc-tag tag-history">História & Sociedade</span>
+            <span class="disc-icon">📖</span>
+            <h3>História da Música</h3>
+            <p>Do vinil ao streaming — como a música moldou e foi moldada pela história e pela tecnologia.</p>
+            <ul class="disc-list">
+              <li>Origem dos gêneros musicais e seu contexto social</li>
+              <li>MPB, Samba e a identidade cultural brasileira</li>
+              <li>Rock, Hip-hop e movimentos de contracultura</li>
+              <li>A revolução digital e o surgimento do streaming</li>
+              <li>Representatividade e diversidade na música</li>
+            </ul>
+          </div>
+          <div class="disc-card">
+            <span class="disc-tag tag-music">Teoria & Prática Musical</span>
+            <span class="disc-icon">🎸</span>
+            <h3>Criação & Composição</h3>
+            <p>A espinha dorsal do projeto. A teoria é ensinada a serviço da criação, não como fim em si mesma.</p>
+            <ul class="disc-list">
+              <li>Ritmo, compasso e subdivisões</li>
+              <li>Escalas, acordes e harmonia funcional</li>
+              <li>Melodia e desenvolvimento motívico</li>
+              <li>Estrutura de uma música (intro, verso, refrão…)</li>
+              <li>Técnicas de composição de letras</li>
+            </ul>
+          </div>
+          <div class="disc-card">
+            <span class="disc-tag tag-business">Negócios & Marketing</span>
+            <span class="disc-icon">📈</span>
+            <h3>Mercado & Empreendedorismo</h3>
+            <p>O artista de hoje precisa entender o mercado. Os alunos aprendem como transformar arte em projeto.</p>
+            <ul class="disc-list">
+              <li>Direitos autorais e propriedade intelectual</li>
+              <li>Como funciona o streaming (royalties, DSPs)</li>
+              <li>Identidade artística e branding pessoal</li>
+              <li>Marketing digital para músicos</li>
+              <li>Planejamento de lançamento (release plan)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="slide-advance">
+          <button class="btn btn-primary" onclick="goToSlide(4)">Ver o Cronograma →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: CRONOGRAMA -->
+    <section class="slide slide-bg-dark2" id="slide-5" data-slide="4">
+      <div class="container">
+        <span class="section-label">Cronograma</span>
+        <h2 class="section-title">A jornada de <span class="gradient-text">6 meses</span></h2>
+        <p class="section-sub">
+          Cada mês tem um tema central e um entregável claro, garantindo que os alunos sintam progresso
+          constante e tenham um produto concreto ao final de cada etapa.
+        </p>
+
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-month">
+              <div class="tl-circle c1">📅</div>
+              <div class="tl-label">Mês 1</div>
+            </div>
+            <div class="tl-content">
+              <h3>🎧 Som, Imagem e Criatividade</h3>
+              <p>Imersão dupla: de onde vem o som E como a imagem comunica. Primeiros contatos com a DAW e câmera. Cada
+                aluno define seu papel no projeto.</p>
+              <div class="tl-tags">
+                <span class="tl-tag">Física do Som e da Imagem</span>
+                <span class="tl-tag">História do Videoclipe</span>
+                <span class="tl-tag">Introdução à DAW</span>
+                <span class="tl-tag">Moodboard Coletivo</span>
+              </div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-month">
+              <div class="tl-circle c2">📅</div>
+              <div class="tl-label">Mês 2</div>
+            </div>
+            <div class="tl-content">
+              <h3>🎼 Composição e Identidade Visual</h3>
+              <p>Teoria musical aplicada: ritmo, escalas, acordes, melodia e estrutura. Os alunos escrevem a letra e
+                criam a <strong>identidade visual do projeto</strong>: nome artístico, paleta, logo e tipografia.</p>
+              <div class="tl-tags">
+                <span class="tl-tag">Harmonia e Melodia</span>
+                <span class="tl-tag">Escrita de Letras</span>
+                <span class="tl-tag">Identidade Visual</span>
+                <span class="tl-tag">Branding Artístico</span>
+              </div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-month">
+              <div class="tl-circle c3">📅</div>
+              <div class="tl-label">Mês 3</div>
+            </div>
+            <div class="tl-content">
+              <h3>📹 Pré-Produção Completa</h3>
+              <p>No áudio, grava guias na DAW. No audiovisual, escreve o <strong>roteiro e storyboard do clipe</strong>,
+                define locações, figurinos e enquadramentos.</p>
+              <div class="tl-tags">
+                <span class="tl-tag">Gravação de Guias</span>
+                <span class="tl-tag">Roteiro do Clipe</span>
+                <span class="tl-tag">Storyboard</span>
+                <span class="tl-tag">Direção de Arte</span>
+              </div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-month">
+              <div class="tl-circle c4">📅</div>
+              <div class="tl-label">Mês 4</div>
+            </div>
+            <div class="tl-content">
+              <h3>🎤 Produção: Estúdio + Set de Filmagem</h3>
+              <p>Gravação de vozes, vocais de apoio e instrumentos no estúdio móvel. Filmagem das cenas planejadas nas
+                locações do colégio com câmeras profissionais.</p>
+              <div class="tl-tags">
+                <span class="tl-tag">Gravação de Vozes</span>
+                <span class="tl-tag">Captação de Instrumentos</span>
+                <span class="tl-tag">Set de Filmagem</span>
+                <span class="tl-tag">Footage e B-Roll</span>
+              </div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-month">
+              <div class="tl-circle c5">📅</div>
+              <div class="tl-label">Mês 5</div>
+            </div>
+            <div class="tl-content">
+              <h3>🎬 Pós-Produção: Mixagem e Edição de Vídeo</h3>
+              <p>No áudio: mixagem completa com EQ, compressão, reverb e automação. No vídeo: <strong>edição no Premiere
+                  ou DaVinci Resolve</strong>, sincronização, color grading e motion graphics.</p>
+              <div class="tl-tags">
+                <span class="tl-tag">Mixagem</span>
+                <span class="tl-tag">Edição de Vídeo</span>
+                <span class="tl-tag">Color Grading</span>
+                <span class="tl-tag">Ouvido Crítico</span>
+              </div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-month">
+              <div class="tl-circle c6">📅</div>
+              <div class="tl-label">Mês 6</div>
+            </div>
+            <div class="tl-content">
+              <h3>🚀 Lançamento e Show de Encerramento</h3>
+              <p>A música vai ao ar no Spotify, Deezer e Apple Music. O clipe é publicado no YouTube. Um <strong>show de
+                  encerramento</strong> é realizado para pais, professores e colegas — com apresentação ao vivo
+                <em>e</em> exibição do clipe na tela.</p>
+              <div class="tl-tags">
+                <span class="tl-tag">Spotify + Deezer</span>
+                <span class="tl-tag">Clipe no YouTube</span>
+                <span class="tl-tag">Show ao Vivo</span>
+                <span class="tl-tag">Certificado</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-advance">
+          <a href="curriculo.html" class="btn btn-ghost" target="_blank">Ver Conteúdo Aula a Aula ↗</a>
+          <button class="btn btn-primary" onclick="goToSlide(5)">Sobre a Umimbae →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: UMIMBAE -->
+    <section class="slide slide-bg-dark" id="slide-6" data-slide="5">
+      <div class="container">
+        <div style="text-align:center; margin-bottom:1.5rem;">
+          <span class="section-label">A Plataforma</span>
+          <span class="umimbae-logo-text">Umimbae</span>
+          <p class="section-sub" style="margin: 0 auto;">
+            O <strong>selo musical</strong> que conecta o aprendizado ao mercado real da música.
+          </p>
+        </div>
+
+        <div class="flow-cards">
+          <div class="flow-card">
+            <span class="flow-icon">🏫</span>
+            <h4>Sala de Aula</h4>
+            <p>Onde a criação acontece</p>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-card">
+            <span class="flow-icon">🎛️</span>
+            <h4>Produção</h4>
+            <p>Gravação e finalização</p>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-card">
+            <span class="flow-icon">🎵</span>
+            <h4>Umimbae</h4>
+            <p>Distribuição & mentoria</p>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-card">
+            <span class="flow-icon">🌍</span>
+            <h4>Mundo</h4>
+            <p>Spotify, Deezer, Apple Music…</p>
+          </div>
+        </div>
+
+        <div class="benefits-grid">
+          <div class="benefit-card">
+            <div class="bicon">🏫</div>
+            <div>
+              <h4>Para a Escola</h4>
+              <p>Diferencial competitivo real no mercado de educação particular. Marketing orgânico poderoso — pais
+                compartilham a música e o clipe dos filhos nas redes sociais.</p>
+            </div>
+          </div>
+          <div class="benefit-card">
+            <div class="bicon">🎓</div>
+            <div>
+              <h4>Para os Alunos</h4>
+              <p>Dois produtos publicados no portfólio digital: uma música no Spotify e um clipe no YouTube com seu nome
+                nos créditos. Habilidades técnicas e socioemocionais reais.</p>
+            </div>
+          </div>
+          <div class="benefit-card">
+            <div class="bicon">👨‍👩‍👧</div>
+            <div>
+              <h4>Para os Pais</h4>
+              <p>Filhos protagonistas de um projeto audiovisual real e completo — não apenas uma recita interna. Uma
+                música no Spotify e um clipe acessíveis para sempre.</p>
+            </div>
+          </div>
+          <div class="benefit-card">
+            <div class="bicon">🚀</div>
+            <div>
+              <h4>Para a Comunidade</h4>
+              <p>A escola posicionada como espaço de inovação, cultura e tecnologia. O show de encerramento torna-se um
+                evento cultural que fortalece os laços escola-família-bairro.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-advance">
+          <button class="btn btn-primary" onclick="goToSlide(6)">O que é necessário para começar →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: INFRAESTRUTURA -->
+    <section class="slide slide-bg-dark3" id="slide-7" data-slide="6">
+      <div class="container">
+        <span class="section-label">Viabilidade</span>
+        <h2 class="section-title">O que é necessário para <span class="gradient-text">começar</span></h2>
+        <p class="section-sub">
+          O projeto foi desenhado para ser viável com infraestrutura mínima. A maioria das ferramentas necessárias
+          já está disponível em qualquer escola moderna.
+        </p>
+
+        <div class="infra-grid">
+          <div class="infra-card escola">
+            <h3>🏫 A Escola Fornece</h3>
+            <ul class="infra-list">
+              <li><span class="dot"></span>Espaço físico (sala de aula ou laboratório de informática, 1x por semana)
+              </li>
+              <li><span class="dot"></span>Computadores ou notebooks com acesso à internet</li>
+              <li><span class="dot"></span>Caixas de som ou sistema de som básico</li>
+              <li><span class="dot"></span>Divulgação interna para captação de alunos</li>
+              <li><span class="dot"></span>Apoio institucional para o show de encerramento</li>
+            </ul>
+          </div>
+          <div class="infra-card umimbae-card">
+            <h3>🎵 Professor Fornece</h3>
+            <ul class="infra-list">
+              <li><span class="dot"></span>Todo o conteúdo pedagógico, planos de aula e material didático</li>
+              <li><span class="dot"></span>Instrumentos básicos (violão, ukulele, teclado MIDI — conforme
+                disponibilidade)</li>
+              <li><span class="dot"></span>Microfone e interface de áudio para gravação</li>
+              <li><span class="dot"></span>Licença de DAW (softwares como GarageBand ou versões gratuitas)</li>
+              <li><span class="dot"></span>Distribuição das músicas nas plataformas digitais via Umimbae</li>
+              <li><span class="dot"></span>Mentoria em marketing e lançamento</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="highlight-box" style="margin-top: 1.75rem;">
+          <p>
+            <strong>💡 Nota importante:</strong> O projeto pode ser iniciado em formato piloto com uma única turma
+            reduzida
+            (8–12 alunos), permitindo validar o modelo com baixo risco e alto impacto antes de escalar para outras
+            turmas
+            e séries no semestre seguinte.
+          </p>
+        </div>
+
+        <div class="slide-advance">
+          <button class="btn btn-primary" onclick="goToSlide(7)">Ver o Modelo Financeiro →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: FINANCEIRO -->
+    <section class="slide slide-bg-dark" id="slide-8" data-slide="7">
+      <div class="container">
+        <span class="section-label">Modelo de Negócio</span>
+        <h2 class="section-title">O que o <span class="gradient-text">Fernandes Menezes ganha</span> com essa parceria?
+        </h2>
+        <p class="section-sub">
+          Um programa completo de inovação pedagógica, uma nova fonte de receita e marketing orgânico poderoso
+          — sem contratação, sem criação de currículo, sem risco financeiro.
+        </p>
+
+        <!-- Comparativo -->
+        <div style="margin-top: 1.75rem; overflow-x:auto;">
+          <h3 style="font-family:'Outfit',sans-serif; font-size:1.1rem; font-weight:700; margin-bottom:1rem;">O que a
+            escola <em>gastaria</em> nas alternativas tradicionais:</h3>
+          <table class="fin-table">
+            <thead>
+              <tr>
+                <th>Modelo</th>
+                <th>Custo mensal pra escola</th>
+                <th>Risco</th>
+                <th>Resultado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Contratar professor CLT</td>
+                <td class="bad">R$ 3.500 – 6.000</td>
+                <td class="bad">Alto</td>
+                <td>Aula de música convencional</td>
+              </tr>
+              <tr>
+                <td>Empresa de extracurricular</td>
+                <td class="warn">R$ 2.000 – 4.000</td>
+                <td class="warn">Médio</td>
+                <td>Pacote genérico, sem diferencial</td>
+              </tr>
+              <tr class="highlight-row">
+                <td><strong>🎵 Fechar com a Umimbae (70/30)</strong></td>
+                <td class="good"><strong>R$ 0 — RECEBE +R$ 1.350</strong></td>
+                <td class="good"><strong>Zero</strong></td>
+                <td><strong>Projeto inovador + Spotify + show ao vivo</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Projeção -->
+        <div style="margin-top: 1.75rem; overflow-x:auto;">
+          <h3 style="font-family:'Outfit',sans-serif; font-size:1.1rem; font-weight:700; margin-bottom:.75rem;">Projeção
+            de receita — R$ 150/aluno/mês:</h3>
+          <table class="fin-table">
+            <thead>
+              <tr>
+                <th>Cenário</th>
+                <th>Alunos</th>
+                <th>Bruto/mês</th>
+                <th>Receita do Colégio/mês</th>
+                <th>Viabilidade</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Piloto mínimo — 1 turma</td>
+                <td>8</td>
+                <td>R$ 1.200</td>
+                <td>R$ 360</td>
+                <td class="warn">⚠️ Arranque</td>
+              </tr>
+              <tr>
+                <td>Piloto cheio — 1 turma</td>
+                <td>12</td>
+                <td>R$ 1.800</td>
+                <td>R$ 540</td>
+                <td class="warn">⚠️ Bom início</td>
+              </tr>
+              <tr class="highlight-row">
+                <td><strong>Consolidado — 3 turmas</strong></td>
+                <td><strong>30</strong></td>
+                <td><strong>R$ 4.500</strong></td>
+                <td><strong>R$ 1.350</strong></td>
+                <td class="good"><strong>✅ Sólido</strong></td>
+              </tr>
+              <tr>
+                <td>Expansão — 4 turmas</td>
+                <td>40</td>
+                <td>R$ 6.000</td>
+                <td>R$ 1.800</td>
+                <td class="good">✅ Confortável</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="slide-advance">
+          <button class="btn btn-primary" onclick="goToSlide(8)">Sobre o Professor →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 9: FACILITADOR + FAQ -->
+    <section class="slide slide-bg-dark2" id="slide-9" data-slide="8">
+      <div class="container">
+        <div class="facilitator-grid">
+          <!-- Facilitador -->
+          <div>
+            <span class="section-label">O Professor</span>
+            <h2 class="section-title">Quem vai <span class="gradient-text">guiar os alunos?</span></h2>
+            <p class="section-sub">Muito mais que aulas: mentoria direta com quem vive e respira produção musical.</p>
+
+            <div class="facilitator-box">
+              <div class="fac-header">
+                <div class="fac-avatar">
+                  <img src="assets/umimbae_profile.webp" alt="@marentropico"
+                    onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><rect width=\'100\' height=\'100\' fill=\'%23EAB308\'/><text x=\'50\' y=\'55\' font-size=\'35\' font-family=\'sans-serif\' font-weight=\'bold\' fill=\'white\' text-anchor=\'middle\' dominant-baseline=\'middle\'>ME</text></svg>'">
+                </div>
+                <div class="fac-title">
+                  <h3>Marcos Paulo Figueroa <span style="font-weight: 300; opacity: 0.7;">marcosfigueroa.br@gmail.com</span></h3>
+                  <span class="fac-role">Fundador da Umimbae · Produtor Audiovisual</span>
+                </div>
+              </div>
+              <p>Produtor Fonográfico Técnico pela <strong>Universidade Anhembi Morumbi</strong>, Marcos atua na
+                interseção entre a música, a tecnologia e a educação. Fundador da produtora <em>Umimbae</em>, traz a
+                vivência real de estúdio, design e desenvolvimento diretamente do Grajaú (Polo Cultural de São Paulo)
+                para a sala de aula.</p>
+              <p>Criador da metodologia <strong>"Do Zero Ao Hit"</strong>, que transforma o complexo universo da
+                engenharia de som e da teoria musical em uma linguagem jovem, acessível e totalmente prática.</p>
+            </div>
+          </div>
+
+          <!-- FAQ -->
+          <div>
+            <span class="section-label">Tira-Dúvidas</span>
+            <h2 class="section-title">Perguntas <span class="gradient-text">Frequentes</span></h2>
+
+            <div class="faq-grid" style="grid-template-columns:1fr; margin-top:1rem;">
+              <div class="faq-item">
+                <h4>O aluno precisa saber tocar algum instrumento?</h4>
+                <p><strong>Não.</strong> O curso é formatado do zero absoluto. A música digital permite que qualquer
+                  aluno componha usando o computador como instrumento principal (via mouse, teclado e controladores
+                  MIDI).</p>
+              </div>
+              <div class="faq-item">
+                <h4>Os alunos precisam trazer Notebook ou equipamentos caros?</h4>
+                <p><strong>Não.</strong> O colégio disponibiliza a sala com projetor/TV, e a Umimbae leva o "Estúdio
+                  Móvel" completo (controladoras MIDI, placa de som, microfones).</p>
+              </div>
+              <div class="faq-item">
+                <h4>Qual a idade recomendada para a turma?</h4>
+                <p>Idealmente, estudantes do <strong>Ensino Fundamental II e Ensino Médio (11 a 17 anos)</strong>. É a
+                  fase em que o interesse musical está no auge e a identidade do jovem está se formando.</p>
+              </div>
+              <div class="faq-item">
+                <h4>O que acontece se um aluno desistir no meio do curso?</h4>
+                <p>O projeto é altamente modular. Se um aluno sai, o grupo continua a produção da música. A metodologia
+                  de gamificação garante um engajamento muito maior que aulas teóricas tradicionais.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-advance">
+          <button class="btn btn-primary" onclick="goToSlide(9)">Vamos fechar? →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 10: CTA -->
+    <section class="slide slide-bg-dark" id="slide-10" data-slide="9">
+      <div class="container"
+        style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
+        <div class="cta-box">
+          <h2>O <span class="gradient-text">Fernandes Menezes</span> pronto para o próximo passo?</h2>
+          <p>
+            Este projeto foi desenhado especificamente para o perfil do Colégio Fernandes Menezes —
+            seus alunos, sua filosofia e seu momento. Estamos disponíveis para alinhar os detalhes
+            e formalizar a parceria conforme a realidade e o calendário do colégio.
+          </p>
+          <div class="cta-buttons">
+            <a href="mailto:umimbae.br@gmail.com" class="btn btn-primary">📧 Enviar E-mail</a>
+            <a href="https://wa.me/5511960990565" class="btn btn-ghost" target="_blank">💬 Conversar pelo WhatsApp</a>
+          </div>
+          <div class="contact-info">
+            <!-- link estilizado -->
+            <style>
+              .contact-item a {
+                color: var(--text);
+                text-decoration: none;
+                font-weight: 500;
+                transition: color .2s;
+              }
+              .contact-item a:hover {
+                color: var(--purple);
+              }
+            </style>
+            
+            <div class="contact-item"><span>🌐</span> <a href="https://umimbae.com.br" target="_blank">umimbae.com.br</a></div>
+            <div class="contact-item"><span>📍</span> São Paulo – SP</div>
+            <div class="contact-item"><span>🎵</span> <a href="https://instagram.com/umimbae" target="_blank">@umimbae</a></div>
+          </div>
+        </div>
+
+        <p style="margin-top:2rem; color:var(--muted); font-size:.8rem;">
+          © 2026 <strong style="color:var(--purple-l);">Umimbae</strong> — Proposta de Projeto Piloto para o <strong
+            style="color:var(--purple-l);">Colégio Parque Maravilha / Fernandes Menezes</strong>
+        </p>
+
+        <div class="slide-advance">
+          <button class="btn btn-ghost" onclick="goToSlide(0)">← Ver desde o início</button>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /slides-wrapper -->
+
+  <script>
+    // ─── STATE ───
+    const TOTAL = 10;
+    let current = 0;
+    let isAnimating = false;
+
+    const slides = document.querySelectorAll('.slide');
+    const fill = document.getElementById('progress-fill');
+    const counter = document.getElementById('slide-counter');
+    const dotsNav = document.getElementById('dots-nav');
+    const btnPrev = document.getElementById('nav-prev');
+    const btnNext = document.getElementById('nav-next');
+
+    // ─── BUILD DOTS ───
+    slides.forEach((_, i) => {
+      const dot = document.createElement('button');
+      dot.className = 'dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', `Ir para slide ${i + 1}`);
+      dot.addEventListener('click', () => goToSlide(i));
+      dotsNav.appendChild(dot);
+    });
+
+    // ─── NAVIGATE ───
+    function goToSlide(target) {
+      if (isAnimating || target === current || target < 0 || target >= TOTAL) return;
+      isAnimating = true;
+
+      const prev = slides[current];
+      const next = slides[target];
+      const isForward = target > current;
+
+      // exit current
+      prev.classList.remove('active');
+      if (isForward) {
+        prev.classList.add('exit-left');
+      }
+
+      // prepare next (start from right if forward, from left if backward)
+      next.style.transition = 'none';
+      next.style.opacity = '0';
+      next.style.transform = isForward ? 'translateX(60px)' : 'translateX(-60px)';
+      next.style.pointerEvents = 'none';
+
+      // force reflow
+      next.getBoundingClientRect();
+
+      next.style.transition = '';
+      next.style.opacity = '';
+      next.style.transform = '';
+      next.classList.add('active');
+
+      setTimeout(() => {
+        // clean up prev
+        if (isForward) {
+          prev.classList.remove('exit-left');
+        }
+        // make next interactive
+        next.style.pointerEvents = '';
+        isAnimating = false;
+      }, 520);
+
+      current = target;
+      updateUI();
+    }
+
+    function updateUI() {
+      // progress bar
+      fill.style.width = ((current + 1) / TOTAL * 100) + '%';
+
+      // counter
+      counter.textContent = `${current + 1} / ${TOTAL}`;
+
+      // dots
+      dotsNav.querySelectorAll('.dot').forEach((d, i) => {
+        d.classList.toggle('active', i === current);
+      });
+
+      // top menu active state
+      const menuButtons = document.querySelectorAll('.menu-item');
+      menuButtons.forEach((btn, i) => {
+        btn.classList.toggle('active', i === current);
+      });
+
+      // side nav
+      btnPrev.classList.toggle('disabled', current === 0);
+      btnNext.classList.toggle('disabled', current === TOTAL - 1);
+
+      // scroll slide to top
+      slides[current].scrollTop = 0;
+    }
+
+    // ─── SIDE BUTTONS ───
+    btnPrev.addEventListener('click', () => goToSlide(current - 1));
+    btnNext.addEventListener('click', () => goToSlide(current + 1));
+
+    // ─── KEYBOARD ───
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goToSlide(current + 1);
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goToSlide(current - 1);
+    });
+
+    // ─── SWIPE / TOUCH ───
+    let touchStartX = 0;
+    let touchStartY = 0;
+    document.addEventListener('touchstart', e => {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    document.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      const dy = e.changedTouches[0].clientY - touchStartY;
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+        if (dx < 0) goToSlide(current + 1);
+        else goToSlide(current - 1);
+      }
+    }, { passive: true });
+
+    // ─── INIT ───
+    updateUI();
+  </script>
+
+</body>
+
+</html>
